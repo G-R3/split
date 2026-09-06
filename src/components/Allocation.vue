@@ -19,8 +19,8 @@ type ExchangeRatesResponse = {
   data: {
     currency: string;
     rates: {
-      BTC: number;
-      ETH: number;
+      BTC: string;
+      ETH: string;
     };
   };
 };
@@ -39,20 +39,12 @@ const amount = computed(() => {
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
 });
 
-const btcUsdAllocation = computed(() =>
-  amount.value === null ? 0 : amount.value * BTC_ALLOCATION,
-);
-const ethUsdAllocation = computed(() =>
-  amount.value === null ? 0 : amount.value * ETH_ALLOCATION,
-);
+const btcUsdAllocation = computed(() => (amount.value ?? 0) * BTC_ALLOCATION);
+const ethUsdAllocation = computed(() => (amount.value ?? 0) * ETH_ALLOCATION);
 
-const btcAmount = computed(() =>
-  btcRate.value === null ? 0 : btcUsdAllocation.value * btcRate.value,
-);
+const btcAmount = computed(() => btcUsdAllocation.value * (btcRate.value ?? 0));
 
-const ethAmount = computed(() =>
-  ethRate.value === null ? 0 : ethUsdAllocation.value * ethRate.value,
-);
+const ethAmount = computed(() => ethUsdAllocation.value * (ethRate.value ?? 0));
 
 async function getRates() {
   try {
@@ -103,15 +95,25 @@ onMounted(getRates);
 
     <section v-else>
       <article>
-        <h2>BTC</h2>
-        <strong>{{ cryptoFormatter.format(btcAmount) }}</strong>
-        <span>{{ usdFormatter.format(btcUsdAllocation) }}</span>
+        <div>
+          <h2>BTC</h2>
+          <strong>{{ cryptoFormatter.format(btcAmount) }}</strong>
+        </div>
+        <div>
+          <span>{{ BTC_ALLOCATION * 100 }}%</span>
+          <span>{{ usdFormatter.format(btcUsdAllocation) }}</span>
+        </div>
       </article>
 
       <article>
-        <h2>ETH</h2>
-        <strong>{{ cryptoFormatter.format(ethAmount) }}</strong>
-        <span>{{ usdFormatter.format(ethUsdAllocation) }}</span>
+        <div>
+          <h2>ETH</h2>
+          <strong>{{ cryptoFormatter.format(ethAmount) }}</strong>
+        </div>
+        <div>
+          <span>{{ ETH_ALLOCATION * 100 }}%</span>
+          <span>{{ usdFormatter.format(ethUsdAllocation) }}</span>
+        </div>
       </article>
     </section>
   </main>
