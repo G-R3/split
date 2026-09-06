@@ -32,13 +32,19 @@ const loading = ref(true);
 const error = ref<string | null>(null);
 
 const amount = computed(() => {
+  if (!holdings.value.trim()) return null;
+
   const parsed = Number(holdings.value);
 
-  return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
 });
 
-const btcUsdAllocation = computed(() => amount.value * BTC_ALLOCATION);
-const ethUsdAllocation = computed(() => amount.value * ETH_ALLOCATION);
+const btcUsdAllocation = computed(() =>
+  amount.value === null ? 0 : amount.value * BTC_ALLOCATION,
+);
+const ethUsdAllocation = computed(() =>
+  amount.value === null ? 0 : amount.value * ETH_ALLOCATION,
+);
 
 const btcAmount = computed(() =>
   btcRate.value === null ? 0 : btcUsdAllocation.value * btcRate.value,
@@ -84,6 +90,8 @@ onMounted(getRates);
         autocomplete="off"
         spellcheck="false"
       />
+
+      <p v-if="amount === null">Enter a valid USD amount.</p>
     </section>
 
     <p v-if="loading">Loading exchange rates...</p>
