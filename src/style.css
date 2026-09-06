@@ -9,7 +9,13 @@
   --font-ui: system-ui, "Segoe UI", Roboto, sans-serif;
   --weight-strong: 600;
   --color-text: #282823;
+  --color-text-muted: #62625a;
+  --color-focus: #214ecb;
+  --color-error: #a12b20;
   --background: #f1f0ec;
+  --surface: #fff;
+  --shadow: 0 8px 24px #24241912, 0 1px 2px #24241915;
+  --border: #deddd8;
   font-family: var(--font-ui);
   color: var(--color-text);
   background: var(--background);
@@ -33,4 +39,72 @@ main {
   display: grid;
   place-items: center;
   padding: var(--padding);
+}
+
+.container {
+  padding: var(--padding);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  border-radius: var(--space-3);
+}
+
+.holdings {
+  position: relative;
+  display: grid;
+  gap: var(--space-1);
+}
+
+.holdings-input {
+  display: flex;
+  align-items: center;
+  cursor: text;
+  gap: var(--space-1);
+  width: 100%;
+  height: calc(var(--grid) * 8);
+  min-width: 0;
+  padding-inline: var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  font-weight: 400;
+}
+
+.holdings-input input {
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  color: inherit;
+  background: transparent;
+  font: 24px/32px var(--font-ui);
+}
+
+.holdings-input:focus-within,
+button:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 4px;
+}
+
+.holdings-input.invalid {
+  border-color: var(--color-error);
+}
+
+.input-message {
+  position: absolute;
+  inset-block-start: 100%;
+  min-block-size: 1lh;
+  color: var(--color-error);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.currency-mark {
+  font: 24px/32px var(--font-ui);
+}
+
+.currency-code {
+  color: var(--color-text-muted);
+  font-size: 12px;
+  line-height: 24px;
 }

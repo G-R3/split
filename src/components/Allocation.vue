@@ -87,63 +87,71 @@ onMounted(getRates);
 
 <template>
   <main>
-    <section>
-      <label for="holdings">USD holdings</label>
-
-      <input
-        id="holdings"
-        v-model="holdings"
-        type="text"
-        inputmode="decimal"
-        autocomplete="off"
-        spellcheck="false"
-      />
-
-      <span role="status" aria-live="polite">
-        {{ amount.error }}
-      </span>
-
-      <button type="button" :disabled="loading" @click="getRates">Refresh rates</button>
-    </section>
-
-    <section>
-      <article>
-        <div>
-          <h2>BTC</h2>
-          <strong v-if="btcAmount !== undefined">{{ cryptoFormatter.format(btcAmount) }}</strong>
-          <span v-else-if="loading && !amount.error" aria-hidden="true">-</span>
-          <span
-            v-else
-            :aria-label="amount.error ? 'Enter a valid amount' : 'Bitcoin rate unavailable'"
-            >---</span
-          >
-        </div>
-        <div>
-          <span>{{ BTC_ALLOCATION * 100 }}% · </span>
-          <span>
-            {{ btcUsdAllocation === undefined ? "---" : usdFormatter.format(btcUsdAllocation) }}
+    <div class="container">
+      <section>
+        <label for="holdings" class="holdings">
+          <span>USD holdings</span>
+          <span class="holdings-input">
+            <span class="currency-mark" aria-hidden="true">$</span>
+            <input
+              id="holdings"
+              v-model="holdings"
+              type="text"
+              inputmode="decimal"
+              autocomplete="off"
+              spellcheck="false"
+              :aria-invalid="Boolean(amount.error)"
+            />
+            <span class="currency-code" aria-hidden="true">USD</span>
           </span>
-        </div>
-      </article>
+        </label>
 
-      <article>
-        <div>
-          <h2>ETH</h2>
-          <strong v-if="ethAmount !== undefined">{{ cryptoFormatter.format(ethAmount) }}</strong>
-          <span v-else-if="loading && !amount.error" aria-hidden="true">-</span>
-          <span
-            v-else
-            :aria-label="amount.error ? 'Enter a valid amount' : 'Ethereum rate unavailable'"
-            >---</span
-          >
-        </div>
-        <div>
-          <span>{{ ETH_ALLOCATION * 100 }}% · </span>
-          <span>
-            {{ ethUsdAllocation === undefined ? "---" : usdFormatter.format(ethUsdAllocation) }}
-          </span>
-        </div>
-      </article>
-    </section>
+        <span id="amount-message" class="input-message" role="status" aria-live="polite">
+          {{ amount.error }}
+        </span>
+
+        <button type="button" :disabled="loading" @click="getRates">Refresh rates</button>
+      </section>
+
+      <section>
+        <article>
+          <div>
+            <h2>BTC</h2>
+            <strong v-if="btcAmount !== undefined">{{ cryptoFormatter.format(btcAmount) }}</strong>
+            <span v-else-if="loading && !amount.error" aria-hidden="true">-</span>
+            <span
+              v-else
+              :aria-label="amount.error ? 'Enter a valid amount' : 'Bitcoin rate unavailable'"
+              >---</span
+            >
+          </div>
+          <div>
+            <span>{{ BTC_ALLOCATION * 100 }}% · </span>
+            <span>
+              {{ btcUsdAllocation === undefined ? "---" : usdFormatter.format(btcUsdAllocation) }}
+            </span>
+          </div>
+        </article>
+
+        <article>
+          <div>
+            <h2>ETH</h2>
+            <strong v-if="ethAmount !== undefined">{{ cryptoFormatter.format(ethAmount) }}</strong>
+            <span v-else-if="loading && !amount.error" aria-hidden="true">-</span>
+            <span
+              v-else
+              :aria-label="amount.error ? 'Enter a valid amount' : 'Ethereum rate unavailable'"
+              >---</span
+            >
+          </div>
+          <div>
+            <span>{{ ETH_ALLOCATION * 100 }}% · </span>
+            <span>
+              {{ ethUsdAllocation === undefined ? "---" : usdFormatter.format(ethUsdAllocation) }}
+            </span>
+          </div>
+        </article>
+      </section>
+    </div>
   </main>
 </template>
