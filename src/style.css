@@ -7,18 +7,16 @@
   --padding: 24px;
   --radius: 24px;
   --font-ui: system-ui, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
   --weight-strong: 600;
-  --color-text: #282823;
-  --color-text-muted: #62625a;
-  --color-focus: #214ecb;
-  --color-error: #a12b20;
-  --background: #f1f0ec;
+  --color-text: #171715;
+  --color-text-muted: #696762;
+  --focus-ring: 0 0 0 2px var(--background), 0 0 0 4px var(--color-text);
+  --color-error: #b64235;
+  --background: #f7f6f2;
   --surface: #fff;
   --shadow: 0 8px 24px #24241912, 0 1px 2px #24241915;
   --border: #deddd8;
-  font-family: var(--font-ui);
-  color: var(--color-text);
-  background: var(--background);
   font-synthesis: none;
   -webkit-font-smoothing: antialiased;
 }
@@ -32,6 +30,9 @@
 body {
   font-size: 16px;
   line-height: 24px;
+  font-family: var(--font-ui);
+  color: var(--color-text);
+  background: var(--background);
 }
 
 main {
@@ -77,13 +78,14 @@ main {
   outline: 0;
   color: inherit;
   background: transparent;
-  font: 24px/32px var(--font-ui);
+  font: 24px/32px var(--font-mono);
 }
 
 .holdings-input:focus-within,
 button:focus-visible {
-  outline: 2px solid var(--color-focus);
-  outline-offset: 4px;
+  outline: none;
+  border-color: var(--color-text);
+  box-shadow: var(--focus-ring);
 }
 
 .holdings-input.invalid {
@@ -100,11 +102,12 @@ button:focus-visible {
 }
 
 .currency-mark {
-  font: 24px/32px var(--font-ui);
+  font: 24px/32px var(--font-mono);
 }
 
 .currency-code {
   color: var(--color-text-muted);
   font-size: 12px;
   line-height: 24px;
+  font-family: var(--font-mono);
 }
