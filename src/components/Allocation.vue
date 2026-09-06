@@ -102,30 +102,26 @@ onMounted(getRates);
       <span role="status" aria-live="polite">
         {{ amount.error }}
       </span>
+
+      <button type="button" :disabled="loading" @click="getRates">Refresh rates</button>
     </section>
 
-    <p v-if="loading">Loading exchange rates...</p>
-
-    <p v-else-if="error">
-      {{ error }}
-      <button type="button" @click="getRates">Try again</button>
-    </p>
-
-    <section v-else>
+    <section>
       <article>
         <div>
           <h2>BTC</h2>
           <strong v-if="btcAmount !== undefined">{{ cryptoFormatter.format(btcAmount) }}</strong>
+          <span v-else-if="loading && !amount.error" aria-hidden="true">-</span>
           <span
             v-else
             :aria-label="amount.error ? 'Enter a valid amount' : 'Bitcoin rate unavailable'"
-            >—</span
+            >---</span
           >
         </div>
         <div>
           <span>{{ BTC_ALLOCATION * 100 }}% · </span>
           <span>
-            {{ btcUsdAllocation === undefined ? "—" : usdFormatter.format(btcUsdAllocation) }}
+            {{ btcUsdAllocation === undefined ? "---" : usdFormatter.format(btcUsdAllocation) }}
           </span>
         </div>
       </article>
@@ -134,16 +130,17 @@ onMounted(getRates);
         <div>
           <h2>ETH</h2>
           <strong v-if="ethAmount !== undefined">{{ cryptoFormatter.format(ethAmount) }}</strong>
+          <span v-else-if="loading && !amount.error" aria-hidden="true">-</span>
           <span
             v-else
             :aria-label="amount.error ? 'Enter a valid amount' : 'Ethereum rate unavailable'"
-            >—</span
+            >---</span
           >
         </div>
         <div>
           <span>{{ ETH_ALLOCATION * 100 }}% · </span>
           <span>
-            {{ ethUsdAllocation === undefined ? "—" : usdFormatter.format(ethUsdAllocation) }}
+            {{ ethUsdAllocation === undefined ? "---" : usdFormatter.format(ethUsdAllocation) }}
           </span>
         </div>
       </article>
