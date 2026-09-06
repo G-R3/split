@@ -44,7 +44,7 @@ onMounted(() => {
       inputMode="decimal"
       autoComplete="off"
       spellCheck="false"
-      :value="holdings"
+      v-model="holdings"
     />
 
     <section>
