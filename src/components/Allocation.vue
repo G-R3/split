@@ -4,6 +4,17 @@ const API_URL = "https://api.coinbase.com/v2/exchange-rates?currency=USD";
 const BTC_ALLOCATION = 0.7;
 const ETH_ALLOCATION = 0.3;
 
+const usdFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 2,
+});
+
+const cryptoFormatter = new Intl.NumberFormat("en-US", {
+  minimumFractionDigits: 8,
+  maximumFractionDigits: 8,
+});
+
 type ExchangeRatesResponse = {
   data: {
     currency: string;
@@ -85,14 +96,14 @@ onMounted(getRates);
     <section v-else>
       <article>
         <h2>BTC</h2>
-        <strong>{{ btcAmount }}</strong>
-        <span>${{ btcUsdAllocation }}</span>
+        <strong>{{ cryptoFormatter.format(btcAmount) }}</strong>
+        <span>{{ usdFormatter.format(btcUsdAllocation) }}</span>
       </article>
 
       <article>
         <h2>ETH</h2>
-        <strong>{{ ethAmount }}</strong>
-        <span>${{ ethUsdAllocation }}</span>
+        <strong>{{ cryptoFormatter.format(ethAmount) }}</strong>
+        <span>{{ usdFormatter.format(ethUsdAllocation) }}</span>
       </article>
     </section>
   </main>
