@@ -32,19 +32,35 @@ const loading = ref(true);
 const error = ref<string | null>(null);
 
 const amount = computed(() => {
-  if (!holdings.value.trim()) return null;
+  const normalized = holdings.value.trim().replaceAll(",", "").replace(/^\$/, "");
 
-  const parsed = Number(holdings.value);
+  if (!normalized) return { error: "Enter an amount." };
 
-  return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+  const value = Number(normalized);
+
+  if (!Number.isFinite(value) || value < 0) return { error: "Enter a valid amount." };
+
+  return { amount: value };
 });
 
-const btcUsdAllocation = computed(() => (amount.value ?? 0) * BTC_ALLOCATION);
-const ethUsdAllocation = computed(() => (amount.value ?? 0) * ETH_ALLOCATION);
+const btcUsdAllocation = computed(() =>
+  amount.value.amount === undefined ? undefined : amount.value.amount * BTC_ALLOCATION,
+);
+const ethUsdAllocation = computed(() =>
+  amount.value.amount === undefined ? undefined : amount.value.amount * ETH_ALLOCATION,
+);
 
-const btcAmount = computed(() => btcUsdAllocation.value * (btcRate.value ?? 0));
+const btcAmount = computed(() =>
+  btcUsdAllocation.value === undefined || btcRate.value === null
+    ? undefined
+    : btcUsdAllocation.value * btcRate.value,
+);
 
-const ethAmount = computed(() => ethUsdAllocation.value * (ethRate.value ?? 0));
+const ethAmount = computed(() =>
+  ethUsdAllocation.value === undefined || ethRate.value === null
+    ? undefined
+    : ethUsdAllocation.value * ethRate.value,
+);
 
 async function getRates() {
   try {
@@ -83,7 +99,9 @@ onMounted(getRates);
         spellcheck="false"
       />
 
-      <p v-if="amount === null">Enter a valid USD amount.</p>
+      <span role="status" aria-live="polite">
+        {{ amount.error }}
+      </span>
     </section>
 
     <p v-if="loading">Loading exchange rates...</p>
@@ -97,22 +115,36 @@ onMounted(getRates);
       <article>
         <div>
           <h2>BTC</h2>
-          <strong>{{ cryptoFormatter.format(btcAmount) }}</strong>
+          <strong v-if="btcAmount !== undefined">{{ cryptoFormatter.format(btcAmount) }}</strong>
+          <span
+            v-else
+            :aria-label="amount.error ? 'Enter a valid amount' : 'Bitcoin rate unavailable'"
+            >—</span
+          >
         </div>
         <div>
-          <span>{{ BTC_ALLOCATION * 100 }}%</span>
-          <span>{{ usdFormatter.format(btcUsdAllocation) }}</span>
+          <span>{{ BTC_ALLOCATION * 100 }}% · </span>
+          <span>
+            {{ btcUsdAllocation === undefined ? "—" : usdFormatter.format(btcUsdAllocation) }}
+          </span>
         </div>
       </article>
 
       <article>
         <div>
           <h2>ETH</h2>
-          <strong>{{ cryptoFormatter.format(ethAmount) }}</strong>
+          <strong v-if="ethAmount !== undefined">{{ cryptoFormatter.format(ethAmount) }}</strong>
+          <span
+            v-else
+            :aria-label="amount.error ? 'Enter a valid amount' : 'Ethereum rate unavailable'"
+            >—</span
+          >
         </div>
         <div>
-          <span>{{ ETH_ALLOCATION * 100 }}%</span>
-          <span>{{ usdFormatter.format(ethUsdAllocation) }}</span>
+          <span>{{ ETH_ALLOCATION * 100 }}% · </span>
+          <span>
+            {{ ethUsdAllocation === undefined ? "—" : usdFormatter.format(ethUsdAllocation) }}
+          </span>
         </div>
       </article>
     </section>
