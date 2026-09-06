@@ -89,28 +89,33 @@ onMounted(getRates);
   <main>
     <div class="container">
       <section>
-        <label for="holdings" class="holdings">
-          <span>USD holdings</span>
-          <span class="holdings-input">
-            <span class="currency-mark" aria-hidden="true">$</span>
-            <input
-              id="holdings"
-              v-model="holdings"
-              type="text"
-              inputmode="decimal"
-              autocomplete="off"
-              spellcheck="false"
-              :aria-invalid="Boolean(amount.error)"
-            />
-            <span class="currency-code" aria-hidden="true">USD</span>
-          </span>
-        </label>
+        <div class="holdings">
+          <label for="holdings-input" class="holdings-container">
+            <span>USD holdings</span>
+            <span class="holdings-input">
+              <span class="currency-mark" aria-hidden="true">$</span>
+              <input
+                id="holdings"
+                v-model="holdings"
+                type="text"
+                inputmode="decimal"
+                autocomplete="off"
+                spellcheck="false"
+                :aria-invalid="Boolean(amount.error)"
+              />
+              <span class="currency-code" aria-hidden="true">USD</span>
+            </span>
+          </label>
+
+          <div class="rate-control">
+            <button type="button" :disabled="loading" @click="getRates">Refresh rates</button>
+            <span class="rate-control-status">Placeholder: Updated now</span>
+          </div>
+        </div>
 
         <span id="amount-message" class="input-message" role="status" aria-live="polite">
           {{ amount.error }}
         </span>
-
-        <button type="button" :disabled="loading" @click="getRates">Refresh rates</button>
       </section>
 
       <section>
