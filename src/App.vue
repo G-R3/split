@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import HelloWorld from "./components/HelloWorld.vue";
+import Allocation from "./components/Allocation.vue";
 </script>
 
 <template>
-  <HelloWorld />
+  <Allocation />
 </template>
