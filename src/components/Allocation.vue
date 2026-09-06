@@ -61,31 +61,39 @@ onMounted(getRates);
 </script>
 
 <template>
-  <section>
-    <input
-      id="holdings"
-      type="text"
-      inputMode="decimal"
-      autoComplete="off"
-      spellCheck="false"
-      min="0"
-      v-model="holdings"
-    />
+  <main>
+    <section>
+      <label for="holdings">USD holdings</label>
 
-    <span v-if="loading">Loading...</span>
-    <span v-else-if="error">Error: {{ error }}</span>
+      <input
+        id="holdings"
+        v-model="holdings"
+        type="text"
+        inputmode="decimal"
+        autocomplete="off"
+        spellcheck="false"
+      />
+    </section>
+
+    <p v-if="loading">Loading exchange rates...</p>
+
+    <p v-else-if="error">
+      {{ error }}
+      <button type="button" @click="getRates">Try again</button>
+    </p>
 
     <section v-else>
-      <div>
+      <article>
         <h2>BTC</h2>
         <strong>{{ btcAmount }}</strong>
         <span>${{ btcUsdAllocation }}</span>
-      </div>
-      <div>
+      </article>
+
+      <article>
         <h2>ETH</h2>
         <strong>{{ ethAmount }}</strong>
         <span>${{ ethUsdAllocation }}</span>
-      </div>
+      </article>
     </section>
-  </section>
+  </main>
 </template>
