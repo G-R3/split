@@ -1,0 +1,36 @@
+:root {
+  color-scheme: light;
+  --grid: 8px;
+  --space-1: var(--grid);
+  --space-2: calc(var(--grid) * 2);
+  --space-3: calc(var(--grid) * 3);
+  --padding: 24px;
+  --radius: 24px;
+  --font-ui: system-ui, "Segoe UI", Roboto, sans-serif;
+  --weight-strong: 600;
+  --color-text: #282823;
+  --background: #f1f0ec;
+  font-family: var(--font-ui);
+  color: var(--color-text);
+  background: var(--background);
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-size: 16px;
+  line-height: 24px;
+}
+
+main {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: var(--padding);
+}
