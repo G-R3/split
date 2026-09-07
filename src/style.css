@@ -103,11 +103,16 @@ button {
 .rate-refresh {
   display: flex;
   flex-direction: column;
+  min-inline-size: 7.5rem;
 }
 .rate-refresh-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   min-block-size: 1lh;
   font-size: 12px;
   color: var(--color-text-muted);
+  white-space: nowrap;
 }
 
 .configure-card-field {
@@ -360,10 +365,12 @@ button {
   line-height: 2.25rem;
   overflow-wrap: break-word;
   margin-top: 1.25rem;
+  min-block-size: 2.25rem;
 
   @media (min-width: 640px) {
     font-size: 2.25rem;
     line-height: 2.5rem;
+    min-block-size: 2.5rem;
   }
 }
 
@@ -375,9 +382,15 @@ button {
   background-color: var(--border);
 }
 .rate-refresh-status-skeleton {
-  inline-size: 14ch;
+  inline-size: 100%;
   block-size: 0.5rem;
   vertical-align: middle;
+}
+.result-item-quantity-skeleton {
+  display: block;
+  inline-size: min(12ch, 100%);
+  block-size: 0.75em;
+  margin-block: 0.125em;
 }
 
 .result-item-allocated {

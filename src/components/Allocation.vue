@@ -137,10 +137,10 @@ onMounted(getRates);
               Refresh rates
             </button>
             <span class="rate-refresh-status" role="status" aria-live="polite">
-              <template v-if="lastUpdated">
-                Updated at <time :datetime="lastUpdated.datetime">{{ lastUpdated.label }}</time>
+              <span v-if="loading" class="rate-refresh-status-skeleton" aria-hidden="true" />
+              <template v-else-if="lastUpdated">
+                Updated at&nbsp;<time :datetime="lastUpdated.datetime">{{ lastUpdated.label }}</time>
               </template>
-              <span v-else-if="loading" class="rate-refresh-status-skeleton" aria-hidden="true" />
             </span>
           </div>
         </div>
@@ -239,23 +239,23 @@ onMounted(getRates);
               <article class="result-item" :aria-labelledby="`asset-${asset.symbol}`">
                 <strong class="result-item-header"> {{ asset.name }} ({{ asset.symbol }}) </strong>
 
-                <template v-if="asset.quantity !== undefined">
-                  <p class="result-item-quantity">
+                <p class="result-item-quantity">
+                  <span
+                    v-if="loading && !amount.error"
+                    class="result-item-quantity-skeleton"
+                    aria-hidden="true"
+                  />
+                  <template v-else-if="asset.quantity !== undefined">
                     {{ cryptoFormatter.format(asset.quantity) }} {{ asset.symbol }}
-                  </p>
-                </template>
-                <span
-                  v-else-if="loading && !amount.error"
-                  class="result-item-quantity-skeleton"
-                  aria-hidden="true"
-                />
-                <span
-                  v-else
-                  :aria-label="
-                    amount.error ? 'Enter a valid amount' : `${asset.name} rate unavailable`
-                  "
-                  >---</span
-                >
+                  </template>
+                  <span
+                    v-else
+                    :aria-label="
+                      amount.error ? 'Enter a valid amount' : `${asset.name} rate unavailable`
+                    "
+                    >---</span
+                  >
+                </p>
 
                 <p class="result-item-allocated">
                   {{ asset.usd === undefined ? "---" : usdFormatter.format(asset.usd) }} allocated
