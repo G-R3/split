@@ -1,9 +1,36 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
+type AssetSymbol = "BTC" | "ETH" | "SOL" | "ADA" | "DOGE";
+type Asset = {
+  symbol: AssetSymbol;
+  name: string;
+};
+
+type Allocation = {
+  name?: string;
+  symbol: AssetSymbol;
+  percentage: number;
+  quantity?: number;
+  usd?: number;
+};
+
+type ExchangeRatesResponse = {
+  data: {
+    currency: string;
+    rates: Record<string, string>;
+  };
+};
+
 const API_URL = "https://api.coinbase.com/v2/exchange-rates?currency=USD";
-// const BTC_ALLOCATION = 0.7;
-// const ETH_ALLOCATION = 0.3;
 const ASSET_SPLIT = [0.7, 0.3] as const;
+
+const ASSETS = [
+  { symbol: "BTC", name: "Bitcoin" },
+  { symbol: "ETH", name: "Ethereum" },
+  { symbol: "SOL", name: "Solana" },
+  { symbol: "ADA", name: "Cardano" },
+  { symbol: "DOGE", name: "Dogecoin" },
+] satisfies readonly Asset[];
 
 const usdFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -19,29 +46,6 @@ const cryptoFormatter = new Intl.NumberFormat("en-US", {
 const timeFormatter = new Intl.DateTimeFormat("en-US", {
   timeStyle: "short",
 });
-
-const ASSETS = [
-  { symbol: "BTC", name: "Bitcoin" },
-  { symbol: "ETH", name: "Ethereum" },
-  { symbol: "SOL", name: "Solana" },
-  { symbol: "ADA", name: "Cardano" },
-  { symbol: "DOGE", name: "Dogecoin" },
-];
-type AssetSymbol = (typeof ASSETS)[number]["symbol"];
-
-type Allocation = {
-  name?: string;
-  symbol: string;
-  percentage: number;
-  quantity?: number;
-  usd?: number;
-};
-type ExchangeRatesResponse = {
-  data: {
-    currency: string;
-    rates: Record<string, string>;
-  };
-};
 
 const holdings = ref("10000");
 const rates = ref<Record<string, string>>({});
@@ -62,7 +66,7 @@ const amount = computed(() => {
   return { amount: value };
 });
 
-const allocations = computed<Allocation[] | null>(() => {
+const allocations = computed(() => {
   return selectedSymbols.value.map((symbol, i) => {
     const asset = ASSETS.find((asset) => asset.symbol === symbol);
     const rate = Number(rates.value[symbol]);
@@ -76,7 +80,7 @@ const allocations = computed<Allocation[] | null>(() => {
       percentage: percentage * 100,
       quantity,
       usd,
-    };
+    } satisfies Allocation;
   });
 });
 
@@ -104,7 +108,7 @@ async function getRates() {
     loading.value = false;
   }
 }
-console.log(allocations.value);
+
 onMounted(getRates);
 </script>
 
