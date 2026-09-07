@@ -31,17 +31,6 @@ const ASSETS = [
   { symbol: "DOGE", name: "Dogecoin" },
 ] satisfies readonly Asset[];
 
-const usdFormatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-});
-
-const cryptoFormatter = new Intl.NumberFormat("en-US", {
-  minimumFractionDigits: 8,
-  maximumFractionDigits: 8,
-});
-
 const timeFormatter = new Intl.DateTimeFormat("en-US", {
   timeStyle: "short",
 });
@@ -127,10 +116,24 @@ onMounted(getRates);
 </script>
 
 <template>
-  <main>
-    <div class="allocation-card">
-      <section class="holdings">
-        <div class="holdings-row">
+  <main class="app-shell">
+    <section class="app-grid">
+      <section class="configure-card" aria-labelledby="configure-title">
+        <div class="configure-card-heading">
+          <h3 id="configure-title" class="configure-card-heading-title">Configure</h3>
+          <div class="rate-refresh">
+            <button class="rate-refresh-button" type="button" :disabled="loading" @click="getRates">
+              Refresh rates
+            </button>
+            <span class="rate-refresh-status" role="status" aria-live="polite">
+              <template v-if="lastUpdated">
+                Updated at <time :datetime="lastUpdated.datetime">{{ lastUpdated.label }}</time>
+              </template>
+              <span v-else-if="loading" class="rate-refresh-status-skeleton" aria-hidden="true" />
+            </span>
+          </div>
+        </div>
+        <div class="configure-card-field">
           <label for="holdings-input" class="amount-field">
             <span>USD holdings</span>
             <span class="amount-input" :class="{ 'amount-input--invalid': amount.error }">
@@ -149,26 +152,14 @@ onMounted(getRates);
             </span>
           </label>
 
-          <div class="rate-refresh">
-            <button type="button" :disabled="loading" @click="getRates">Refresh rates</button>
-            <span class="rate-status" role="status" aria-live="polite">
-              <template v-if="lastUpdated">
-                Updated at <time :datetime="lastUpdated.datetime">{{ lastUpdated.label }}</time>
-              </template>
-              <span v-else-if="loading" class="timestamp-placeholder" aria-hidden="true" />
-            </span>
-          </div>
+          <span id="holdings-error" class="holdings-error" role="status" aria-live="polite">
+            {{ amount.error }}
+          </span>
         </div>
-
-        <span id="holdings-error" class="holdings-error" role="status" aria-live="polite">
-          {{ amount.error }}
-        </span>
-      </section>
-
-      <section class="allocation" aria-labelledby="allocation-heading">
-        <h2 id="allocation-heading" class="allocation-heading">Allocation</h2>
-
-        <div class="allocation-list">
+        <div class="configure-card-allocation">
+          <p class="allocation-heading">Allocation</p>
+        </div>
+        <div class="allocation-controls">
           <template v-for="(asset, rowIndex) in allocations" :key="rowIndex">
             <article class="allocation-row" :aria-labelledby="`asset-${asset.symbol}`">
               <div class="allocation-asset-field">
@@ -192,20 +183,6 @@ onMounted(getRates);
                     {{ option.name }} ({{ option.symbol }})
                   </option>
                 </select>
-                <svg
-                  class="allocation-asset-chevron"
-                  aria-hidden="true"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                >
-                  <path
-                    d="m4 6 4 4 4-4"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
               </div>
 
               <label class="allocation-percentage">
@@ -227,31 +204,6 @@ onMounted(getRates);
                 />
                 <span aria-hidden="true">%</span>
               </label>
-
-              <div class="allocation-result">
-                <span class="allocation-label">Buy</span>
-                <strong class="allocation-quantity">
-                  <template v-if="asset.quantity !== undefined">
-                    {{ cryptoFormatter.format(asset.quantity) }} {{ asset.symbol }}
-                  </template>
-                  <span
-                    v-else-if="loading && !amount.error"
-                    class="quantity-placeholder"
-                    aria-hidden="true"
-                  />
-                  <span
-                    v-else
-                    :aria-label="
-                      amount.error ? 'Enter a valid amount' : `${asset.name} rate unavailable`
-                    "
-                    >---</span
-                  >
-                </strong>
-                <span class="allocation-value">
-                  {{ asset.usd === undefined ? "---" : usdFormatter.format(asset.usd) }}
-                  · {{ asset.percentage }}%
-                </span>
-              </div>
             </article>
 
             <label v-if="rowIndex === 0" class="allocation-range-field">
@@ -267,6 +219,37 @@ onMounted(getRates);
           </template>
         </div>
       </section>
-    </div>
+
+      <section class="results-panel">
+        <div>
+          <h3 class="result-title">What to buy?</h3>
+          <div class="result-items">
+            <template v-for="(asset, rowIndex) in allocations" :key="rowIndex">
+              <article class="result-item" :aria-labelledby="`asset-${asset.symbol}`">
+                <strong class="result-item-header"> {{ asset.name }} ({{ asset.symbol }}) </strong>
+
+                <template v-if="asset.quantity !== undefined">
+                  <p class="result-item-quantity">{{ asset.quantity }} {{ asset.symbol }}</p>
+                </template>
+                <span
+                  v-else-if="loading && !amount.error"
+                  class="result-item-quantity-skeleton"
+                  aria-hidden="true"
+                />
+                <span
+                  v-else
+                  :aria-label="
+                    amount.error ? 'Enter a valid amount' : `${asset.name} rate unavailable`
+                  "
+                  >---</span
+                >
+
+                <p class="result-item-allocated">{{ asset.usd }} allocated</p>
+              </article>
+            </template>
+          </div>
+        </div>
+      </section>
+    </section>
   </main>
 </template>
