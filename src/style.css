@@ -8,7 +8,6 @@
   --radius: 24px;
   --font-ui: system-ui, "Segoe UI", Roboto, sans-serif;
   --font-mono: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
-  --weight-strong: 600;
   --color-text: #171715;
   --color-text-muted: #696762;
   --focus-ring: 0 0 0 2px var(--background), 0 0 0 4px var(--color-text);
@@ -42,7 +41,9 @@ main {
   padding: var(--padding);
 }
 
-.container {
+.allocation-card {
+  width: 100%;
+  max-width: 42em;
   padding: var(--padding);
   background: var(--surface);
   box-shadow: var(--shadow);
@@ -50,19 +51,22 @@ main {
 }
 
 .holdings {
+  position: relative;
+}
+
+.holdings-row {
   display: flex;
   justify-content: space-between;
   align-items: end;
   gap: var(--space-3);
 }
 
-.holdings-container {
-  position: relative;
+.amount-field {
   display: grid;
   gap: var(--space-1);
 }
 
-.holdings-input {
+.amount-input {
   display: flex;
   align-items: center;
   cursor: text;
@@ -74,13 +78,11 @@ main {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--surface);
-  font-weight: 400;
 }
 
-.holdings-input input {
+.amount-input > input {
   width: 100%;
   min-width: 0;
-  padding: 0;
   border: 0;
   outline: 0;
   color: inherit;
@@ -88,24 +90,25 @@ main {
   font: 24px/32px var(--font-mono);
 }
 
-.holdings-input:focus-within,
+.amount-input:focus-within,
 button:focus-visible {
   outline: none;
-  border-color: var(--color-text);
   box-shadow: var(--focus-ring);
 }
 
-.holdings-input.invalid {
+.amount-input:focus-within {
+  border-color: var(--color-text);
+}
+
+.amount-input--invalid {
   border-color: var(--color-error);
 }
 
-.input-message {
+.holdings-error {
   position: absolute;
   inset-block-start: 100%;
-  min-block-size: 1lh;
   color: var(--color-error);
   font-size: 12px;
-  font-weight: 400;
 }
 
 .currency-mark {
@@ -135,15 +138,15 @@ button {
 
 button:disabled {
   cursor: wait;
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted);
 }
 
-.rate-control {
+.rate-refresh {
   display: flex;
   flex-direction: column;
 }
 
-.rate-control-status {
+.rate-status {
   font-size: 12px;
   color: var(--color-text-muted);
 }

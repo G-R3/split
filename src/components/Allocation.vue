@@ -81,39 +81,39 @@ async function getRates() {
     loading.value = false;
   }
 }
-
 onMounted(getRates);
 </script>
 
 <template>
   <main>
-    <div class="container">
-      <section>
-        <div class="holdings">
-          <label for="holdings-input" class="holdings-container">
+    <div class="allocation-card">
+      <section class="holdings">
+        <div class="holdings-row">
+          <label for="holdings-input" class="amount-field">
             <span>USD holdings</span>
-            <span class="holdings-input">
+            <span class="amount-input" :class="{ 'amount-input--invalid': amount.error }">
               <span class="currency-mark" aria-hidden="true">$</span>
               <input
-                id="holdings"
+                id="holdings-input"
                 v-model="holdings"
                 type="text"
                 inputmode="decimal"
                 autocomplete="off"
                 spellcheck="false"
                 :aria-invalid="Boolean(amount.error)"
+                aria-describedby="holdings-error"
               />
               <span class="currency-code" aria-hidden="true">USD</span>
             </span>
           </label>
 
-          <div class="rate-control">
+          <div class="rate-refresh">
             <button type="button" :disabled="loading" @click="getRates">Refresh rates</button>
-            <span class="rate-control-status">Placeholder: Updated now</span>
+            <span class="rate-status">Placeholder: Updated now</span>
           </div>
         </div>
 
-        <span id="amount-message" class="input-message" role="status" aria-live="polite">
+        <span id="holdings-error" class="holdings-error" role="status" aria-live="polite">
           {{ amount.error }}
         </span>
       </section>
