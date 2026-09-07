@@ -161,26 +161,42 @@ onMounted(getRates);
             class="allocation-row"
             :aria-labelledby="`asset-${asset.symbol}`"
           >
-            <select
-              v-model="selectedSymbols[rowIndex]"
-              :aria-label="`Asset for ${asset.percentage}% allocation`"
-              :id="`asset-${asset.symbol}`"
-              class="allocation-asset"
-            >
-              <option
-                v-for="option in ASSETS"
-                :value="option.symbol"
-                :key="option.symbol"
-                :disabled="
-                  selectedSymbols.some(
-                    (selectedSymbol, selectedIndex) =>
-                      selectedIndex !== rowIndex && selectedSymbol === option.symbol,
-                  )
-                "
+            <div class="allocation-asset-field">
+              <select
+                v-model="selectedSymbols[rowIndex]"
+                :aria-label="`Asset for ${asset.percentage}% allocation`"
+                :id="`asset-${asset.symbol}`"
+                class="allocation-asset"
               >
-                {{ option.name }} ({{ option.symbol }})
-              </option>
-            </select>
+                <option
+                  v-for="option in ASSETS"
+                  :value="option.symbol"
+                  :key="option.symbol"
+                  :disabled="
+                    selectedSymbols.some(
+                      (selectedSymbol, selectedIndex) =>
+                        selectedIndex !== rowIndex && selectedSymbol === option.symbol,
+                    )
+                  "
+                >
+                  {{ option.name }} ({{ option.symbol }})
+                </option>
+              </select>
+              <svg
+                class="allocation-asset-chevron"
+                aria-hidden="true"
+                viewBox="0 0 16 16"
+                fill="none"
+              >
+                <path
+                  d="m4 6 4 4 4-4"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </div>
             <span class="allocation-percentage">{{ asset.percentage }}%</span>
 
             <div class="allocation-result">
