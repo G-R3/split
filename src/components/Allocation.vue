@@ -22,7 +22,6 @@ type ExchangeRatesResponse = {
 };
 
 const API_URL = "https://api.coinbase.com/v2/exchange-rates?currency=USD";
-const ASSET_SPLIT = [0.7, 0.3] as const;
 
 const ASSETS = [
   { symbol: "BTC", name: "Bitcoin" },
@@ -47,12 +46,15 @@ const timeFormatter = new Intl.DateTimeFormat("en-US", {
   timeStyle: "short",
 });
 
+const primarySplit = ref(70);
 const holdings = ref("10000");
 const rates = ref<Record<string, string>>({});
 const selectedSymbols = ref<[AssetSymbol, AssetSymbol]>(["BTC", "ETH"]);
 const lastUpdated = ref<{ datetime: string; label: string } | null>(null);
 const loading = ref(true);
 const error = ref<string | null>(null);
+
+const splitPercentages = computed(() => [primarySplit.value, 100 - primarySplit.value] as const);
 
 const amount = computed(() => {
   const normalized = holdings.value.trim().replaceAll(",", "").replace(/^\$/, "");
@@ -70,14 +72,15 @@ const allocations = computed(() => {
   return selectedSymbols.value.map((symbol, i) => {
     const asset = ASSETS.find((asset) => asset.symbol === symbol);
     const rate = Number(rates.value[symbol]);
-    const percentage = ASSET_SPLIT[i];
-    const usd = amount.value.amount === undefined ? undefined : amount.value.amount * percentage;
+    const percentage = splitPercentages.value[i];
+    const usd =
+      amount.value.amount === undefined ? undefined : amount.value.amount * (percentage / 100);
     const quantity = usd !== undefined && Number.isFinite(rate) ? usd * rate : undefined;
 
     return {
       name: asset?.name,
       symbol,
-      percentage: percentage * 100,
+      percentage: percentage,
       quantity,
       usd,
     } satisfies Allocation;
@@ -107,6 +110,16 @@ async function getRates() {
   } finally {
     loading.value = false;
   }
+}
+
+function updateSplitPercentages(rowIndex: number, event: Event) {
+  const input = event.currentTarget as HTMLInputElement;
+
+  if (!Number.isFinite(input.valueAsNumber)) return;
+
+  const split = Math.min(100, Math.max(0, Math.round(input.valueAsNumber)));
+
+  primarySplit.value = rowIndex === 0 ? split : 100 - split;
 }
 
 onMounted(getRates);
@@ -155,75 +168,95 @@ onMounted(getRates);
         <h2 id="allocation-heading" class="allocation-heading">Allocation</h2>
 
         <div class="allocation-list">
-          <article
-            v-for="(asset, rowIndex) in allocations"
-            :key="rowIndex"
-            class="allocation-row"
-            :aria-labelledby="`asset-${asset.symbol}`"
-          >
-            <div class="allocation-asset-field">
-              <select
-                v-model="selectedSymbols[rowIndex]"
-                :aria-label="`Asset for ${asset.percentage}% allocation`"
-                :id="`asset-${asset.symbol}`"
-                class="allocation-asset"
-              >
-                <option
-                  v-for="option in ASSETS"
-                  :value="option.symbol"
-                  :key="option.symbol"
-                  :disabled="
-                    selectedSymbols.some(
-                      (selectedSymbol, selectedIndex) =>
-                        selectedIndex !== rowIndex && selectedSymbol === option.symbol,
-                    )
-                  "
+          <template v-for="(asset, rowIndex) in allocations" :key="rowIndex">
+            <article class="allocation-row" :aria-labelledby="`asset-${asset.symbol}`">
+              <div class="allocation-asset-field">
+                <select
+                  v-model="selectedSymbols[rowIndex]"
+                  :aria-label="`Asset for ${asset.percentage}% allocation`"
+                  :id="`asset-${asset.symbol}`"
+                  class="allocation-asset"
                 >
-                  {{ option.name }} ({{ option.symbol }})
-                </option>
-              </select>
-              <svg
-                class="allocation-asset-chevron"
-                aria-hidden="true"
-                viewBox="0 0 16 16"
-                fill="none"
-              >
-                <path
-                  d="m4 6 4 4 4-4"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-            </div>
-            <span class="allocation-percentage">{{ asset.percentage }}%</span>
-
-            <div class="allocation-result">
-              <span class="allocation-label">Buy</span>
-              <strong class="allocation-quantity">
-                <template v-if="asset.quantity !== undefined">
-                  {{ cryptoFormatter.format(asset.quantity) }} {{ asset.symbol }}
-                </template>
-                <span
-                  v-else-if="loading && !amount.error"
-                  class="quantity-placeholder"
+                  <option
+                    v-for="option in ASSETS"
+                    :value="option.symbol"
+                    :key="option.symbol"
+                    :disabled="
+                      selectedSymbols.some(
+                        (selectedSymbol, selectedIndex) =>
+                          selectedIndex !== rowIndex && selectedSymbol === option.symbol,
+                      )
+                    "
+                  >
+                    {{ option.name }} ({{ option.symbol }})
+                  </option>
+                </select>
+                <svg
+                  class="allocation-asset-chevron"
                   aria-hidden="true"
-                />
-                <span
-                  v-else
-                  :aria-label="
-                    amount.error ? 'Enter a valid amount' : `${asset.name} rate unavailable`
-                  "
-                  >---</span
+                  viewBox="0 0 16 16"
+                  fill="none"
                 >
-              </strong>
-              <span class="allocation-value">
-                {{ asset.usd === undefined ? "---" : usdFormatter.format(asset.usd) }}
-                · {{ asset.percentage }}%
-              </span>
-            </div>
-          </article>
+                  <path
+                    d="m4 6 4 4 4-4"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+
+              <label class="allocation-percentage">
+                <input
+                  :value="asset.percentage"
+                  type="number"
+                  inputmode="numeric"
+                  min="0"
+                  max="100"
+                  step="1"
+                  :aria-label="`${asset.name} allocation percentage`"
+                  @input="updateSplitPercentages(rowIndex, $event)"
+                />
+                <span aria-hidden="true">%</span>
+              </label>
+
+              <div class="allocation-result">
+                <span class="allocation-label">Buy</span>
+                <strong class="allocation-quantity">
+                  <template v-if="asset.quantity !== undefined">
+                    {{ cryptoFormatter.format(asset.quantity) }} {{ asset.symbol }}
+                  </template>
+                  <span
+                    v-else-if="loading && !amount.error"
+                    class="quantity-placeholder"
+                    aria-hidden="true"
+                  />
+                  <span
+                    v-else
+                    :aria-label="
+                      amount.error ? 'Enter a valid amount' : `${asset.name} rate unavailable`
+                    "
+                    >---</span
+                  >
+                </strong>
+                <span class="allocation-value">
+                  {{ asset.usd === undefined ? "---" : usdFormatter.format(asset.usd) }}
+                  · {{ asset.percentage }}%
+                </span>
+              </div>
+            </article>
+
+            <label v-if="rowIndex == 0" for="allocation-range">
+              <input
+                v-model.number="primarySplit"
+                id="allocation-range"
+                type="range"
+                min="0"
+                max="100"
+              />
+            </label>
+          </template>
         </div>
       </section>
     </div>
