@@ -15,6 +15,10 @@ const cryptoFormatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 8,
 });
 
+const timeFormatter = new Intl.DateTimeFormat("en-US", {
+  timeStyle: "short",
+});
+
 type ExchangeRatesResponse = {
   data: {
     currency: string;
@@ -28,6 +32,7 @@ type ExchangeRatesResponse = {
 const holdings = ref("10000");
 const btcRate = ref<number | null>(null);
 const ethRate = ref<number | null>(null);
+const lastUpdated = ref<{ datetime: string; label: string } | null>(null);
 const loading = ref(true);
 const error = ref<string | null>(null);
 
@@ -92,6 +97,12 @@ async function getRates() {
 
     btcRate.value = Number(data.rates.BTC);
     ethRate.value = Number(data.rates.ETH);
+
+    const updatedAt = new Date();
+    lastUpdated.value = {
+      datetime: updatedAt.toISOString(),
+      label: timeFormatter.format(updatedAt),
+    };
   } catch (err) {
     error.value = err instanceof Error ? err.message : "An unknown error occurred";
   } finally {
@@ -126,7 +137,11 @@ onMounted(getRates);
 
           <div class="rate-refresh">
             <button type="button" :disabled="loading" @click="getRates">Refresh rates</button>
-            <span class="rate-status">Placeholder: Updated now</span>
+            <span class="rate-status" role="status" aria-live="polite">
+              <template v-if="lastUpdated">
+                Updated at <time :datetime="lastUpdated.datetime">{{ lastUpdated.label }}</time>
+              </template>
+            </span>
           </div>
         </div>
 
