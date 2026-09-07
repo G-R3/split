@@ -31,6 +31,17 @@ const ASSETS = [
   { symbol: "DOGE", name: "Dogecoin" },
 ] satisfies readonly Asset[];
 
+const usdFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 2,
+});
+
+const cryptoFormatter = new Intl.NumberFormat("en-US", {
+  minimumFractionDigits: 8,
+  maximumFractionDigits: 8,
+});
+
 const timeFormatter = new Intl.DateTimeFormat("en-US", {
   timeStyle: "short",
 });
@@ -229,7 +240,9 @@ onMounted(getRates);
                 <strong class="result-item-header"> {{ asset.name }} ({{ asset.symbol }}) </strong>
 
                 <template v-if="asset.quantity !== undefined">
-                  <p class="result-item-quantity">{{ asset.quantity }} {{ asset.symbol }}</p>
+                  <p class="result-item-quantity">
+                    {{ cryptoFormatter.format(asset.quantity) }} {{ asset.symbol }}
+                  </p>
                 </template>
                 <span
                   v-else-if="loading && !amount.error"
@@ -244,7 +257,9 @@ onMounted(getRates);
                   >---</span
                 >
 
-                <p class="result-item-allocated">{{ asset.usd }} allocated</p>
+                <p class="result-item-allocated">
+                  {{ asset.usd === undefined ? "---" : usdFormatter.format(asset.usd) }} allocated
+                </p>
               </article>
             </template>
           </div>
