@@ -4,8 +4,12 @@
   --space-1: var(--grid);
   --space-2: calc(var(--grid) * 2);
   --space-3: calc(var(--grid) * 3);
-  --padding: 24px;
-  --radius: 24px;
+  --space-4: calc(var(--grid) * 4);
+  --padding: var(--space-3);
+  --radius: calc(var(--grid) * 3);
+  --radius-md: var(--grid);
+  --radius-lg: calc(var(--grid) * 2);
+  --control-height: calc(var(--grid) * 6);
   --font-ui: system-ui, "Segoe UI", Roboto, sans-serif;
   --font-mono: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
   --color-text: #171715;
@@ -47,7 +51,7 @@ main {
   padding: var(--padding);
   background: var(--surface);
   box-shadow: var(--shadow);
-  border-radius: var(--space-3);
+  border-radius: var(--radius);
 }
 
 .holdings {
@@ -125,10 +129,10 @@ button:focus-visible {
 button {
   min-height: 32px;
   cursor: pointer;
-  padding-block: 6px;
-  padding-inline: 12px;
+  padding-block: var(--space-1);
+  padding-inline: var(--space-2);
   border: 0;
-  border-radius: var(--space-1);
+  border-radius: var(--radius-md);
   color: var(--color-text);
   font-family: inherit;
   font-size: 14px;
@@ -149,4 +153,84 @@ button:disabled {
 .rate-status {
   font-size: 12px;
   color: var(--color-text-muted);
+}
+
+.allocation {
+  margin-block-start: var(--space-4);
+  padding-block-start: var(--space-3);
+  border-block-start: 1px dashed var(--border);
+}
+
+.allocation-heading {
+  margin-block-end: var(--space-3);
+  color: var(--color-text-muted);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.allocation-list {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.allocation-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 64px minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-2);
+}
+
+.allocation-row + .allocation-row {
+  border-block-start: 1px dashed var(--border);
+}
+
+.allocation-asset,
+.allocation-percentage {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.allocation-percentage {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+}
+
+.allocation-result {
+  display: grid;
+  gap: var(--space-1);
+  padding-inline-start: var(--space-3);
+  border-inline-start: 1px dashed var(--border);
+}
+
+.allocation-label {
+  color: var(--color-text-muted);
+  font: 12px/16px var(--font-mono);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.allocation-quantity {
+  font: 600 20px/28px var(--font-mono);
+  overflow-wrap: anywhere;
+}
+
+.allocation-value {
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+@media (max-width: 600px) {
+  .allocation-row {
+    grid-template-columns: minmax(0, 1fr) 64px;
+  }
+
+  .allocation-result {
+    grid-column: 1 / -1;
+    padding-inline-start: 0;
+    padding-block-start: var(--space-2);
+    border-inline-start: 0;
+    border-block-start: 1px dashed var(--border);
+  }
 }

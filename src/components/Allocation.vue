@@ -62,6 +62,23 @@ const ethAmount = computed(() =>
     : ethUsdAllocation.value * ethRate.value,
 );
 
+const allocations = computed(() => [
+  {
+    name: "Bitcoin",
+    symbol: "BTC",
+    percentage: BTC_ALLOCATION * 100,
+    quantity: btcAmount.value,
+    usd: btcUsdAllocation.value,
+  },
+  {
+    name: "Ethereum",
+    symbol: "ETH",
+    percentage: ETH_ALLOCATION * 100,
+    quantity: ethAmount.value,
+    usd: ethUsdAllocation.value,
+  },
+]);
+
 async function getRates() {
   try {
     loading.value = true;
@@ -118,44 +135,45 @@ onMounted(getRates);
         </span>
       </section>
 
-      <section>
-        <article>
-          <div>
-            <h2>BTC</h2>
-            <strong v-if="btcAmount !== undefined">{{ cryptoFormatter.format(btcAmount) }}</strong>
-            <span v-else-if="loading && !amount.error" aria-hidden="true">-</span>
-            <span
-              v-else
-              :aria-label="amount.error ? 'Enter a valid amount' : 'Bitcoin rate unavailable'"
-              >---</span
-            >
-          </div>
-          <div>
-            <span>{{ BTC_ALLOCATION * 100 }}% · </span>
-            <span>
-              {{ btcUsdAllocation === undefined ? "---" : usdFormatter.format(btcUsdAllocation) }}
-            </span>
-          </div>
-        </article>
+      <section class="allocation" aria-labelledby="allocation-heading">
+        <h2 id="allocation-heading" class="allocation-heading">Allocation</h2>
 
-        <article>
-          <div>
-            <h2>ETH</h2>
-            <strong v-if="ethAmount !== undefined">{{ cryptoFormatter.format(ethAmount) }}</strong>
-            <span v-else-if="loading && !amount.error" aria-hidden="true">-</span>
-            <span
-              v-else
-              :aria-label="amount.error ? 'Enter a valid amount' : 'Ethereum rate unavailable'"
-              >---</span
-            >
-          </div>
-          <div>
-            <span>{{ ETH_ALLOCATION * 100 }}% · </span>
-            <span>
-              {{ ethUsdAllocation === undefined ? "---" : usdFormatter.format(ethUsdAllocation) }}
-            </span>
-          </div>
-        </article>
+        <div class="allocation-list">
+          <article
+            v-for="asset in allocations"
+            :key="asset.symbol"
+            class="allocation-row"
+            :aria-labelledby="`asset-${asset.symbol}`"
+          >
+            <h3 :id="`asset-${asset.symbol}`" class="allocation-asset">
+              {{ asset.name }} ({{ asset.symbol }})
+            </h3>
+            <span class="allocation-percentage">{{ asset.percentage }}%</span>
+
+            <div class="allocation-result">
+              <span class="allocation-label">Buy</span>
+              <strong class="allocation-quantity">
+                <template v-if="asset.quantity !== undefined">
+                  {{ cryptoFormatter.format(asset.quantity) }} {{ asset.symbol }}
+                </template>
+                <span v-else-if="loading && !amount.error" aria-label="Loading exchange rate"
+                  >-</span
+                >
+                <span
+                  v-else
+                  :aria-label="
+                    amount.error ? 'Enter a valid amount' : `${asset.name} rate unavailable`
+                  "
+                  >---</span
+                >
+              </strong>
+              <span class="allocation-value">
+                {{ asset.usd === undefined ? "---" : usdFormatter.format(asset.usd) }}
+                · {{ asset.percentage }}%
+              </span>
+            </div>
+          </article>
+        </div>
       </section>
     </div>
   </main>
