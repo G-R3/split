@@ -46,7 +46,6 @@ type ExchangeRatesResponse = {
 const holdings = ref("10000");
 const rates = ref<Record<string, string>>({});
 const selectedSymbols = ref<[AssetSymbol, AssetSymbol]>(["BTC", "ETH"]);
-const allocations = ref<Allocation[] | null>(null);
 const lastUpdated = ref<{ datetime: string; label: string } | null>(null);
 const loading = ref(true);
 const error = ref<string | null>(null);
@@ -63,13 +62,13 @@ const amount = computed(() => {
   return { amount: value };
 });
 
-function getAllocation(selectedSymbols: [AssetSymbol, AssetSymbol]): Allocation[] {
-  return selectedSymbols.map((symbol, i) => {
+const allocations = computed<Allocation[] | null>(() => {
+  return selectedSymbols.value.map((symbol, i) => {
     const asset = ASSETS.find((asset) => asset.symbol === symbol);
     const rate = Number(rates.value[symbol]);
     const percentage = ASSET_SPLIT[i];
     const usd = amount.value.amount === undefined ? undefined : amount.value.amount * percentage;
-    const quantity = usd === undefined ? undefined : usd * rate;
+    const quantity = usd !== undefined && Number.isFinite(rate) ? usd * rate : undefined;
 
     return {
       name: asset?.name,
@@ -79,7 +78,7 @@ function getAllocation(selectedSymbols: [AssetSymbol, AssetSymbol]): Allocation[
       usd,
     };
   });
-}
+});
 
 async function getRates() {
   try {
@@ -105,10 +104,8 @@ async function getRates() {
     loading.value = false;
   }
 }
-onMounted(async () => {
-  await getRates();
-  allocations.value = getAllocation(selectedSymbols.value) ?? null;
-});
+console.log(allocations.value);
+onMounted(getRates);
 </script>
 
 <template>
@@ -160,9 +157,6 @@ onMounted(async () => {
             class="allocation-row"
             :aria-labelledby="`asset-${asset.symbol}`"
           >
-            <!-- <h3 :id="`asset-${asset.symbol}`" class="allocation-asset">
-              {{ asset.name }} ({{ asset.symbol }})
-            </h3> -->
             <select
               v-model="selectedSymbols[rowIndex]"
               :aria-label="`Asset for ${asset.percentage}% allocation`"
