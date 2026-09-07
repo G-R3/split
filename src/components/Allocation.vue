@@ -119,6 +119,7 @@ function updateSplitPercentages(rowIndex: number, event: Event) {
 
   const split = Math.min(100, Math.max(0, Math.round(input.valueAsNumber)));
 
+  input.value = String(split);
   primarySplit.value = rowIndex === 0 ? split : 100 - split;
 }
 
@@ -217,6 +218,12 @@ onMounted(getRates);
                   step="1"
                   :aria-label="`${asset.name} allocation percentage`"
                   @input="updateSplitPercentages(rowIndex, $event)"
+                  @blur="
+                    (event) => {
+                      const input = event.currentTarget as HTMLInputElement;
+                      input.value = String(splitPercentages[rowIndex]);
+                    }
+                  "
                 />
                 <span aria-hidden="true">%</span>
               </label>
@@ -254,6 +261,7 @@ onMounted(getRates);
                 type="range"
                 min="0"
                 max="100"
+                :aria-label="`${asset.name} allocation percentage slider`"
               />
             </label>
           </template>
