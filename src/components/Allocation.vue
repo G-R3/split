@@ -254,10 +254,10 @@ onMounted(getRates);
               </div>
             </article>
 
-            <label v-if="rowIndex == 0" for="allocation-range">
+            <label v-if="rowIndex === 0" class="allocation-range-field">
               <input
                 v-model.number="primarySplit"
-                id="allocation-range"
+                class="allocation-range"
                 type="range"
                 min="0"
                 max="100"
