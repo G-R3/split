@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 const API_URL = "https://api.coinbase.com/v2/exchange-rates?currency=USD";
-const BTC_ALLOCATION = 0.7;
-const ETH_ALLOCATION = 0.3;
+// const BTC_ALLOCATION = 0.7;
+// const ETH_ALLOCATION = 0.3;
+const ASSET_SPLIT = [0.7, 0.3] as const;
 
 const usdFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -19,19 +20,33 @@ const timeFormatter = new Intl.DateTimeFormat("en-US", {
   timeStyle: "short",
 });
 
+const ASSETS = [
+  { symbol: "BTC", name: "Bitcoin" },
+  { symbol: "ETH", name: "Ethereum" },
+  { symbol: "SOL", name: "Solana" },
+  { symbol: "ADA", name: "Cardano" },
+  { symbol: "DOGE", name: "Dogecoin" },
+];
+type AssetSymbol = (typeof ASSETS)[number]["symbol"];
+
+type Allocation = {
+  name?: string;
+  symbol: string;
+  percentage: number;
+  quantity?: number;
+  usd?: number;
+};
 type ExchangeRatesResponse = {
   data: {
     currency: string;
-    rates: {
-      BTC: string;
-      ETH: string;
-    };
+    rates: Record<string, string>;
   };
 };
 
 const holdings = ref("10000");
-const btcRate = ref<number | null>(null);
-const ethRate = ref<number | null>(null);
+const rates = ref<Record<string, string>>({});
+const selectedSymbols = ref<[AssetSymbol, AssetSymbol]>(["BTC", "ETH"]);
+const allocations = ref<Allocation[] | null>(null);
 const lastUpdated = ref<{ datetime: string; label: string } | null>(null);
 const loading = ref(true);
 const error = ref<string | null>(null);
@@ -48,41 +63,23 @@ const amount = computed(() => {
   return { amount: value };
 });
 
-const btcUsdAllocation = computed(() =>
-  amount.value.amount === undefined ? undefined : amount.value.amount * BTC_ALLOCATION,
-);
-const ethUsdAllocation = computed(() =>
-  amount.value.amount === undefined ? undefined : amount.value.amount * ETH_ALLOCATION,
-);
+function getAllocation(selectedSymbols: [AssetSymbol, AssetSymbol]): Allocation[] {
+  return selectedSymbols.map((symbol, i) => {
+    const asset = ASSETS.find((asset) => asset.symbol === symbol);
+    const rate = Number(rates.value[symbol]);
+    const percentage = ASSET_SPLIT[i];
+    const usd = amount.value.amount === undefined ? undefined : amount.value.amount * percentage;
+    const quantity = usd === undefined ? undefined : usd * rate;
 
-const btcAmount = computed(() =>
-  btcUsdAllocation.value === undefined || btcRate.value === null
-    ? undefined
-    : btcUsdAllocation.value * btcRate.value,
-);
-
-const ethAmount = computed(() =>
-  ethUsdAllocation.value === undefined || ethRate.value === null
-    ? undefined
-    : ethUsdAllocation.value * ethRate.value,
-);
-
-const allocations = computed(() => [
-  {
-    name: "Bitcoin",
-    symbol: "BTC",
-    percentage: BTC_ALLOCATION * 100,
-    quantity: btcAmount.value,
-    usd: btcUsdAllocation.value,
-  },
-  {
-    name: "Ethereum",
-    symbol: "ETH",
-    percentage: ETH_ALLOCATION * 100,
-    quantity: ethAmount.value,
-    usd: ethUsdAllocation.value,
-  },
-]);
+    return {
+      name: asset?.name,
+      symbol,
+      percentage: percentage * 100,
+      quantity,
+      usd,
+    };
+  });
+}
 
 async function getRates() {
   try {
@@ -95,8 +92,7 @@ async function getRates() {
 
     const { data }: ExchangeRatesResponse = await response.json();
 
-    btcRate.value = Number(data.rates.BTC);
-    ethRate.value = Number(data.rates.ETH);
+    rates.value = data.rates;
 
     const updatedAt = new Date();
     lastUpdated.value = {
@@ -109,7 +105,10 @@ async function getRates() {
     loading.value = false;
   }
 }
-onMounted(getRates);
+onMounted(async () => {
+  await getRates();
+  allocations.value = getAllocation(selectedSymbols.value) ?? null;
+});
 </script>
 
 <template>
@@ -156,14 +155,34 @@ onMounted(getRates);
 
         <div class="allocation-list">
           <article
-            v-for="asset in allocations"
-            :key="asset.symbol"
+            v-for="(asset, rowIndex) in allocations"
+            :key="rowIndex"
             class="allocation-row"
             :aria-labelledby="`asset-${asset.symbol}`"
           >
-            <h3 :id="`asset-${asset.symbol}`" class="allocation-asset">
+            <!-- <h3 :id="`asset-${asset.symbol}`" class="allocation-asset">
               {{ asset.name }} ({{ asset.symbol }})
-            </h3>
+            </h3> -->
+            <select
+              v-model="selectedSymbols[rowIndex]"
+              :aria-label="`Asset for ${asset.percentage}% allocation`"
+              :id="`asset-${asset.symbol}`"
+              class="allocation-asset"
+            >
+              <option
+                v-for="option in ASSETS"
+                :value="option.symbol"
+                :key="option.symbol"
+                :disabled="
+                  selectedSymbols.some(
+                    (selectedSymbol, selectedIndex) =>
+                      selectedIndex !== rowIndex && selectedSymbol === option.symbol,
+                  )
+                "
+              >
+                {{ option.name }} ({{ option.symbol }})
+              </option>
+            </select>
             <span class="allocation-percentage">{{ asset.percentage }}%</span>
 
             <div class="allocation-result">
