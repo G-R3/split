@@ -157,8 +157,23 @@ button:disabled {
 }
 
 .rate-status {
+  min-block-size: 1lh;
   font-size: 12px;
   color: var(--color-text-muted);
+}
+
+.timestamp-placeholder,
+.quantity-placeholder {
+  display: inline-block;
+  max-inline-size: 100%;
+  border-radius: calc(var(--grid) / 2);
+  background: var(--border);
+}
+
+.timestamp-placeholder {
+  inline-size: 14ch;
+  block-size: var(--grid);
+  vertical-align: middle;
 }
 
 .allocation {
@@ -218,8 +233,16 @@ button:disabled {
 }
 
 .allocation-quantity {
+  display: flex;
+  align-items: center;
+  min-block-size: 1lh;
   font: 600 20px/28px var(--font-mono);
   overflow-wrap: anywhere;
+}
+
+.quantity-placeholder {
+  inline-size: 11ch;
+  block-size: var(--space-2);
 }
 
 .allocation-value {

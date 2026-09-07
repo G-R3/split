@@ -141,6 +141,7 @@ onMounted(getRates);
               <template v-if="lastUpdated">
                 Updated at <time :datetime="lastUpdated.datetime">{{ lastUpdated.label }}</time>
               </template>
+              <span v-else-if="loading" class="timestamp-placeholder" aria-hidden="true" />
             </span>
           </div>
         </div>
@@ -171,9 +172,11 @@ onMounted(getRates);
                 <template v-if="asset.quantity !== undefined">
                   {{ cryptoFormatter.format(asset.quantity) }} {{ asset.symbol }}
                 </template>
-                <span v-else-if="loading && !amount.error" aria-label="Loading exchange rate"
-                  >-</span
-                >
+                <span
+                  v-else-if="loading && !amount.error"
+                  class="quantity-placeholder"
+                  aria-hidden="true"
+                />
                 <span
                   v-else
                   :aria-label="
