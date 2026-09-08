@@ -205,19 +205,33 @@ function updateSplitPercentages(rowIndex: number, event: Event) {
             role="status"
             aria-live="polite"
           >
-            <span v-if="loading" class="rate-refresh-status-skeleton" aria-hidden="true" />
-            <template v-else-if="error && lastUpdated">
-              Refresh failed. Using&nbsp;<time :datetime="lastUpdated.toISOString()">{{
-                timeFormatter.format(lastUpdated)
-              }}</time
-              >&nbsp;rates.
-            </template>
-            <template v-else-if="error">Rates unavailable. Try again.</template>
-            <template v-else-if="lastUpdated">
-              Rates fetched at&nbsp;<time :datetime="lastUpdated.toISOString()">{{
-                timeFormatter.format(lastUpdated)
-              }}</time>
-            </template>
+            <Transition name="rate-state" mode="out-in">
+              <span
+                :key="
+                  loading
+                    ? 'loading'
+                    : error
+                      ? 'error'
+                      : lastUpdated
+                        ? lastUpdated.toISOString()
+                        : 'idle'
+                "
+              >
+                <span v-if="loading" class="rate-refresh-status-skeleton" aria-hidden="true" />
+                <template v-else-if="error && lastUpdated">
+                  Refresh failed. Using&nbsp;<time :datetime="lastUpdated.toISOString()">{{
+                    timeFormatter.format(lastUpdated)
+                  }}</time
+                  >&nbsp;rates.
+                </template>
+                <template v-else-if="error">Rates unavailable. Try again.</template>
+                <template v-else-if="lastUpdated">
+                  Rates fetched at&nbsp;<time :datetime="lastUpdated.toISOString()">{{
+                    timeFormatter.format(lastUpdated)
+                  }}</time>
+                </template>
+              </span>
+            </Transition>
           </span>
           <button
             class="rate-refresh-button"
@@ -241,24 +255,37 @@ function updateSplitPercentages(rowIndex: number, event: Event) {
                 </strong>
 
                 <p class="results-item-quantity">
-                  <span
-                    v-if="loading && !parsedHoldings.error"
-                    class="results-item-quantity-skeleton"
-                    aria-hidden="true"
-                  />
-                  <template v-else-if="asset.quantity !== undefined">
-                    {{ cryptoFormatter.format(asset.quantity) }} {{ asset.symbol }}
-                  </template>
-                  <span v-else>
-                    <span aria-hidden="true">---</span>
-                    <span class="sr-only">
-                      {{
-                        parsedHoldings.error
-                          ? "Enter a valid amount"
-                          : `${asset.name} rate unavailable`
-                      }}
+                  <Transition name="rate-state" mode="out-in">
+                    <span
+                      class="results-item-quantity-state"
+                      :key="
+                        loading && !parsedHoldings.error
+                          ? 'loading'
+                          : asset.quantity !== undefined
+                            ? 'ready'
+                            : 'unavailable'
+                      "
+                    >
+                      <span
+                        v-if="loading && !parsedHoldings.error"
+                        class="results-item-quantity-skeleton"
+                        aria-hidden="true"
+                      />
+                      <template v-else-if="asset.quantity !== undefined">
+                        {{ cryptoFormatter.format(asset.quantity) }} {{ asset.symbol }}
+                      </template>
+                      <span v-else>
+                        <span aria-hidden="true">---</span>
+                        <span class="sr-only">
+                          {{
+                            parsedHoldings.error
+                              ? "Enter a valid amount"
+                              : `${asset.name} rate unavailable`
+                          }}
+                        </span>
+                      </span>
                     </span>
-                  </span>
+                  </Transition>
                 </p>
 
                 <p class="results-item-allocated">
