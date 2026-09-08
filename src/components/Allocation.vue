@@ -42,7 +42,7 @@ const { rates, lastUpdated, loading, error, refreshRates } = useExchangeRates(
 
 const splitPercentages = computed(() => [primarySplit.value, 100 - primarySplit.value] as const);
 
-const amount = computed(() => {
+const parsedHoldings = computed(() => {
   const input = holdings.value.trim();
 
   if (!input) return { error: "Enter an amount." };
@@ -61,7 +61,9 @@ const allocations = computed(() => {
     const rate = rates.value.get(symbol);
     const percentage = splitPercentages.value[i];
     const usd =
-      amount.value.amount === undefined ? undefined : amount.value.amount * (percentage / 100);
+      parsedHoldings.value.amount === undefined
+        ? undefined
+        : parsedHoldings.value.amount * (percentage / 100);
     const quantity = usd !== undefined && rate !== undefined ? usd * rate : undefined;
 
     return {
@@ -105,7 +107,7 @@ function updateSplitPercentages(rowIndex: number, event: Event) {
         <div class="holdings-field">
           <label for="holdings-input" class="amount-field">
             <span>USD holdings</span>
-            <span class="amount-input" :class="{ 'amount-input--invalid': amount.error }">
+            <span class="amount-input" :class="{ 'amount-input--invalid': parsedHoldings.error }">
               <span class="currency-mark" aria-hidden="true">$</span>
               <input
                 id="holdings-input"
@@ -114,7 +116,7 @@ function updateSplitPercentages(rowIndex: number, event: Event) {
                 inputmode="decimal"
                 autocomplete="off"
                 spellcheck="false"
-                :aria-invalid="Boolean(amount.error)"
+                :aria-invalid="Boolean(parsedHoldings.error)"
                 aria-describedby="holdings-error"
               />
               <span class="currency-code" aria-hidden="true">USD</span>
@@ -122,7 +124,7 @@ function updateSplitPercentages(rowIndex: number, event: Event) {
           </label>
 
           <span id="holdings-error" class="holdings-error" role="status" aria-live="polite">
-            {{ amount.error }}
+            {{ parsedHoldings.error }}
           </span>
         </div>
         <fieldset class="allocation-section">
@@ -236,7 +238,7 @@ function updateSplitPercentages(rowIndex: number, event: Event) {
 
                 <p class="results-item-quantity">
                   <span
-                    v-if="loading && !amount.error"
+                    v-if="loading && !parsedHoldings.error"
                     class="results-item-quantity-skeleton"
                     aria-hidden="true"
                   />
@@ -246,7 +248,11 @@ function updateSplitPercentages(rowIndex: number, event: Event) {
                   <span v-else>
                     <span aria-hidden="true">---</span>
                     <span class="sr-only">
-                      {{ amount.error ? "Enter a valid amount" : `${asset.name} rate unavailable` }}
+                      {{
+                        parsedHoldings.error
+                          ? "Enter a valid amount"
+                          : `${asset.name} rate unavailable`
+                      }}
                     </span>
                   </span>
                 </p>
