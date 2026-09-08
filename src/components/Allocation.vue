@@ -33,6 +33,10 @@ const cryptoFormatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 8,
 });
 
+const timeFormatter = new Intl.DateTimeFormat("en-US", {
+  timeStyle: "short",
+});
+
 const primarySplit = ref(70);
 const holdings = ref("10000");
 const selectedSymbols = ref<[AssetSymbol, AssetSymbol]>(["BTC", "ETH"]);
@@ -203,15 +207,15 @@ function updateSplitPercentages(rowIndex: number, event: Event) {
           >
             <span v-if="loading" class="rate-refresh-status-skeleton" aria-hidden="true" />
             <template v-else-if="error && lastUpdated">
-              Refresh failed. Using&nbsp;<time :datetime="lastUpdated.datetime">{{
-                lastUpdated.label
+              Refresh failed. Using&nbsp;<time :datetime="lastUpdated.toISOString()">{{
+                timeFormatter.format(lastUpdated)
               }}</time
               >&nbsp;rates.
             </template>
             <template v-else-if="error">Rates unavailable. Try again.</template>
             <template v-else-if="lastUpdated">
-              Rates fetched at&nbsp;<time :datetime="lastUpdated.datetime">{{
-                lastUpdated.label
+              Rates fetched at&nbsp;<time :datetime="lastUpdated.toISOString()">{{
+                timeFormatter.format(lastUpdated)
               }}</time>
             </template>
           </span>

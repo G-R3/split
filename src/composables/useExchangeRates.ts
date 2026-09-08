@@ -1,14 +1,10 @@
-import { onMounted, ref } from "vue";
+import { onMounted, ref, shallowRef } from "vue";
 
 const API_URL = "https://api.coinbase.com/v2/exchange-rates?currency=USD";
 
-const timeFormatter = new Intl.DateTimeFormat("en-US", {
-  timeStyle: "short",
-});
-
 export function useExchangeRates<Symbol extends string>(symbols: readonly Symbol[]) {
-  const rates = ref(new Map<Symbol, number>());
-  const lastUpdated = ref<{ datetime: string; label: string } | null>(null);
+  const rates = shallowRef(new Map<Symbol, number>());
+  const lastUpdated = ref<Date | null>(null);
   const loading = ref(true);
   const error = ref<string | null>(null);
 
@@ -23,11 +19,7 @@ export function useExchangeRates<Symbol extends string>(symbols: readonly Symbol
 
       rates.value = parseRates(await response.json(), symbols);
 
-      const updatedAt = new Date();
-      lastUpdated.value = {
-        datetime: updatedAt.toISOString(),
-        label: timeFormatter.format(updatedAt),
-      };
+      lastUpdated.value = new Date();
     } catch (err) {
       error.value = err instanceof Error ? err.message : "An unknown error occurred";
     } finally {
