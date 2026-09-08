@@ -130,8 +130,8 @@ onMounted(getRates);
   <main class="app-shell">
     <section class="app-grid">
       <section class="configure-card" aria-labelledby="configure-title">
-        <div class="configure-card-heading">
-          <h3 id="configure-title" class="configure-card-heading-title">Configure</h3>
+        <div class="configure-header">
+          <h3 id="configure-title">Configure</h3>
           <div class="rate-refresh">
             <button class="rate-refresh-button" type="button" :disabled="loading" @click="getRates">
               Refresh rates
@@ -144,7 +144,7 @@ onMounted(getRates);
             </span>
           </div>
         </div>
-        <div class="configure-card-field">
+        <div class="holdings-field">
           <label for="holdings-input" class="amount-field">
             <span>USD holdings</span>
             <span class="amount-input" :class="{ 'amount-input--invalid': amount.error }">
@@ -167,10 +167,10 @@ onMounted(getRates);
             {{ amount.error }}
           </span>
         </div>
-        <div class="configure-card-allocation">
+        <div class="allocation-section-header">
           <p class="allocation-heading">Allocation</p>
         </div>
-        <div class="allocation-controls">
+        <div class="allocation-fields">
           <template v-for="(asset, rowIndex) in allocations" :key="rowIndex">
             <article class="allocation-row" :aria-labelledby="`asset-${asset.symbol}`">
               <div class="allocation-asset-field">
@@ -178,7 +178,7 @@ onMounted(getRates);
                   v-model="selectedSymbols[rowIndex]"
                   :aria-label="`Asset for ${asset.percentage}% allocation`"
                   :id="`asset-${asset.symbol}`"
-                  class="allocation-asset"
+                  class="allocation-asset-select"
                 >
                   <option
                     v-for="option in ASSETS"
@@ -196,7 +196,7 @@ onMounted(getRates);
                 </select>
               </div>
 
-              <label class="allocation-percentage">
+              <label class="allocation-percentage-field">
                 <input
                   :value="asset.percentage"
                   type="number"
@@ -233,16 +233,16 @@ onMounted(getRates);
 
       <section class="results-panel">
         <div>
-          <h3 class="result-title">What to buy?</h3>
-          <div class="result-items">
+          <h3 class="results-title">What to buy?</h3>
+          <div class="results-list">
             <template v-for="(asset, rowIndex) in allocations" :key="rowIndex">
-              <article class="result-item" :aria-labelledby="`asset-${asset.symbol}`">
-                <strong class="result-item-header"> {{ asset.name }} ({{ asset.symbol }}) </strong>
+              <article class="results-item" :aria-labelledby="`asset-${asset.symbol}`">
+                <strong class="results-item-header"> {{ asset.name }} ({{ asset.symbol }}) </strong>
 
-                <p class="result-item-quantity">
+                <p class="results-item-quantity">
                   <span
                     v-if="loading && !amount.error"
-                    class="result-item-quantity-skeleton"
+                    class="results-item-quantity-skeleton"
                     aria-hidden="true"
                   />
                   <template v-else-if="asset.quantity !== undefined">
@@ -257,7 +257,7 @@ onMounted(getRates);
                   >
                 </p>
 
-                <p class="result-item-allocated">
+                <p class="results-item-allocated">
                   {{ asset.usd === undefined ? "---" : usdFormatter.format(asset.usd) }} allocated
                 </p>
               </article>

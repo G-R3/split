@@ -45,7 +45,7 @@ body {
   font-family: var(--font-sans);
   font-size: var(--font-size-base);
 }
-main {
+.app-shell {
   width: min(100% - calc(var(--space-4) * 2), 64rem);
   margin: 0 auto;
   padding: calc(var(--space-7) * 2) 0;
@@ -83,7 +83,7 @@ button {
   }
 }
 
-.configure-card-heading {
+.configure-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -120,7 +120,7 @@ button {
   white-space: nowrap;
 }
 
-.configure-card-field {
+.holdings-field {
   margin-top: var(--space-6);
   position: relative;
 }
@@ -188,7 +188,7 @@ button {
   margin-top: var(--space-1);
 }
 
-.configure-card-allocation {
+.allocation-section-header {
   margin-top: var(--space-7);
   border-top: 1px dashed var(--color-border);
   padding-top: var(--space-5);
@@ -199,7 +199,7 @@ button {
   font-weight: 600;
 }
 
-.allocation-controls {
+.allocation-fields {
   margin-top: var(--space-3);
 }
 .allocation-row {
@@ -222,15 +222,15 @@ button {
   pointer-events: none;
   transform: rotate(45deg);
 }
-.allocation-asset,
-.allocation-percentage input {
+.allocation-asset-select,
+.allocation-percentage-field input {
   background-color: var(--color-canvas);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   width: 100%;
   min-height: 2.75rem;
 }
-.allocation-asset {
+.allocation-asset-select {
   appearance: none;
   padding: var(--space-2) 2.75rem var(--space-2) var(--space-3);
   color: var(--color-text);
@@ -238,21 +238,21 @@ button {
   font-weight: 500;
 }
 
-.allocation-percentage {
+.allocation-percentage-field {
   position: relative;
 }
-.allocation-percentage input {
+.allocation-percentage-field input {
   appearance: textfield;
   font-weight: 600;
   text-align: right;
   padding: var(--space-2) var(--space-7) var(--space-2) var(--space-2);
 }
-.allocation-percentage input::-webkit-inner-spin-button,
-.allocation-percentage input::-webkit-outer-spin-button {
+.allocation-percentage-field input::-webkit-inner-spin-button,
+.allocation-percentage-field input::-webkit-outer-spin-button {
   margin: 0;
   appearance: none;
 }
-.allocation-percentage span {
+.allocation-percentage-field span {
   color: var(--color-text-muted);
   font-size: var(--font-size-sm);
   line-height: var(--space-4);
@@ -318,31 +318,31 @@ select:focus-visible {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
 }
-.result-title {
+.results-title {
   font-size: var(--font-size-xl);
   line-height: 2rem;
   font-weight: 600;
 }
-.result-items {
+.results-list {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
 }
-.result-item {
+.results-item {
   padding-top: var(--space-7);
   padding-bottom: var(--space-7);
 }
-.result-item + .result-item {
+.results-item + .results-item {
   border-top: 1px dashed var(--color-border);
 }
-.result-item-header,
-.result-item-allocated {
+.results-item-header,
+.results-item-allocated {
   font-size: var(--font-size-base);
   line-height: var(--space-5);
 }
-.result-item-header {
+.results-item-header {
   font-weight: 600;
 }
-.result-item-quantity {
+.results-item-quantity {
   letter-spacing: -0.025em;
   font-weight: 600;
   font-size: var(--font-size-2xl);
@@ -359,7 +359,7 @@ select:focus-visible {
 }
 
 .rate-refresh-status-skeleton,
-.result-item-quantity-skeleton {
+.results-item-quantity-skeleton {
   display: inline-block;
   max-inline-size: 100%;
   border-radius: var(--radius-full);
@@ -370,14 +370,14 @@ select:focus-visible {
   block-size: 0.5rem;
   vertical-align: middle;
 }
-.result-item-quantity-skeleton {
+.results-item-quantity-skeleton {
   display: block;
   inline-size: min(12ch, 100%);
   block-size: 0.75em;
   margin-block: 0.125em;
 }
 
-.result-item-allocated {
+.results-item-allocated {
   color: var(--color-text-muted);
   margin-top: var(--space-2);
 }
