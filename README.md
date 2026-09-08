@@ -12,7 +12,7 @@ Live demo: https://split-iota.vercel.app/
 - Coinbase Exchange Rates API
 - CSS
 
-Vue is the only runtime dependency, and the UI is implemented without a component library, CSS framework, or state management library. I opted to keep the allocation state, calculations, and UI together in one component. However, the rates fetching, validation, and request state live in a focused composable.
+Vue is the only runtime dependency, and the UI uses no component library, CSS framework, or state management library. I opted to keep allocation state, calculations, and UI together in one component. Rate fetching, validation, and request state live in a composable.
 
 ## Running it locally
 
@@ -34,7 +34,7 @@ pnpm preview
 
 ### The Coinbase API
 
-The tool uses the Coinbase Exchange Rates API:
+We use the Coinbase Exchange Rates API:
 
 `GET https://api.coinbase.com/v2/exchange-rates?currency=USD`
 
@@ -44,9 +44,9 @@ The API returns each rate as the amount of an asset you can get for one USD. We 
 asset quantity = USD allocation * exchange rate
 ```
 
-We fetch the exchange rates when the page loads and stores the validated rate map locally. Changing the selected assets does not make another API request.
+We fetch the exchange rates when the page loads and store the validated rate map locally. Changing the selected assets does not make another API request.
 
-Before using a response, the app checks that the base currency is USD and that every supported asset has a finite, positive exchange rate. Network errors, unsuccessful HTTP responses, and invalid API responses all show an error state. If a refresh fails, we keep the last valid rates and shows when they were fetched. We also keep using the last valid rates and identifies when they were fetched instead of clearing useful results.
+Before using a response, the app checks that the base currency is USD and that every supported asset has a finite, positive exchange rate. Network errors, unsuccessful HTTP responses, and invalid API responses all show an error state. If a refresh fails, we keep the last valid rates and show when they were fetched.
 
 ### Allocation state
 
@@ -60,7 +60,7 @@ This keeps the two values at a total of 100% without storing and synchronizing t
 
 ### Curated asset selection
 
-The original requirement focuses on `BTC` and `ETH`. I added `SOL`, `ADA`, and `DOGE` to show that the allocation logic works with other assets.
+I began implementing core allocation logic and focused primarily on `BTC` and `ETH`. I added `SOL`, `ADA`, and `DOGE` to show that the allocation logic works with other assets.
 
 The Coinbase Exchange Rates API includes asset symbols, but it does not include the asset metadata needed for a good asset picker. Rather than add another API and support a much larger list of currencies, I opted to use a small curated set instead.
 
