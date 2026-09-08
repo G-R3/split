@@ -12,13 +12,11 @@ Live demo: https://split-iota.vercel.app/
 - Coinbase Exchange Rates API
 - CSS
 
-Vue is the only runtime dependency and the UI is implemented without a component library, CSS framework, or state management library.
+Vue is the only runtime dependency, and the UI is implemented without a component library, CSS framework, or state management library. I also kept most of the feature in one Vue component because I believe the app is small enough that splitting the state, API logic, and UI into separate files would add indirection without much reuse.
 
 ## Running it locally
 
 Requires `pnpm`.
-
-Run locally:
 
 ```bash
 pnpm install
@@ -52,7 +50,7 @@ Before using a response, the app checks that the base currency is USD and that e
 
 ### Allocation state
 
-The default allocation is a `70% / 30%` split and only the primary percentage, `70%`, is stored as mutable state. The second percentage is derived:
+The default allocation is a `70% / 30%` split, and only the primary percentage, `70%`, is stored as mutable state. The second percentage is derived:
 
 ```text
 second allocation = 100 - primary allocation
@@ -62,7 +60,7 @@ This keeps the two values at a total of 100% without storing and synchronizing t
 
 ### Curated asset selection
 
-The original requirement focuses on BTC and ETH. I added SOL, ADA, and DOGE to show that the allocation logic works with other assets.
+The original requirement focuses on `BTC` and `ETH`. I added `SOL`, `ADA`, and `DOGE` to show that the allocation logic works with other assets.
 
 The Coinbase Exchange Rates API includes asset symbols, but it does not include the asset metadata needed for a good asset picker. Rather than add another API and support a much larger list of currencies, I opted to use a small curated set instead.
 
@@ -76,7 +74,9 @@ The main question the UI needs to answer is:
 
 So the calculated asset quantity gets the strongest visual emphasis. The corresponding USD allocation is shown as secondary information in the UI.
 
-The UI layout is also responsive. On larger screens, the Configuration and Results sections appear side by side. On smaller screens, they stack into a single column.
+The layout is responsive. On larger screens, the Configuration and Results sections appear side by side. On smaller screens, they stack into a single column.
+
+The CSS uses shared variables for spacing, typography, colors, borders, border radius, and sizing to keep the UI consistent without adding a CSS framework.
 
 Other UI details include:
 
@@ -90,7 +90,7 @@ Other UI details include:
 - Visible keyboard focus states
 - Reduced-motion support for animations
 
-## Tradeoffs and next steps
+## Next steps
 
 I kept the implementation small and focused on the allocation flow. I avoided adding infrastructure that the current scope did not require.
 
