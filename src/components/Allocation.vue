@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, ref } from "vue";
+import { useExchangeRates } from "../composables/useExchangeRates";
 type AssetSymbol = "BTC" | "ETH" | "SOL" | "ADA" | "DOGE";
 type Asset = {
   symbol: AssetSymbol;
@@ -14,7 +15,6 @@ type Allocation = {
   usd?: number;
 };
 
-const API_URL = "https://api.coinbase.com/v2/exchange-rates?currency=USD";
 const USD_AMOUNT_PATTERN = /^\$?(?:(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d{0,2})?|\.\d{1,2})$/;
 
 const ASSETS = [
@@ -36,17 +36,12 @@ const cryptoFormatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 8,
 });
 
-const timeFormatter = new Intl.DateTimeFormat("en-US", {
-  timeStyle: "short",
-});
-
 const primarySplit = ref(70);
 const holdings = ref("10000");
-const rates = ref(new Map<AssetSymbol, number>());
 const selectedSymbols = ref<[AssetSymbol, AssetSymbol]>(["BTC", "ETH"]);
-const lastUpdated = ref<{ datetime: string; label: string } | null>(null);
-const loading = ref(true);
-const error = ref<string | null>(null);
+const { rates, lastUpdated, loading, error, refreshRates } = useExchangeRates(
+  ASSETS.map((asset) => asset.symbol),
+);
 
 const splitPercentages = computed(() => [primarySplit.value, 100 - primarySplit.value] as const);
 
@@ -82,29 +77,6 @@ const allocations = computed(() => {
   });
 });
 
-async function getRates() {
-  try {
-    loading.value = true;
-    error.value = null;
-
-    const response = await fetch(API_URL);
-
-    if (!response.ok) throw new Error("Failed to fetch exchange rates");
-
-    rates.value = parseRates(await response.json());
-
-    const updatedAt = new Date();
-    lastUpdated.value = {
-      datetime: updatedAt.toISOString(),
-      label: timeFormatter.format(updatedAt),
-    };
-  } catch (err) {
-    error.value = err instanceof Error ? err.message : "An unknown error occurred";
-  } finally {
-    loading.value = false;
-  }
-}
-
 function updateSplitPercentages(rowIndex: number, event: Event) {
   const input = event.currentTarget as HTMLInputElement;
 
@@ -115,43 +87,6 @@ function updateSplitPercentages(rowIndex: number, event: Event) {
   input.value = String(split);
   primarySplit.value = rowIndex === 0 ? split : 100 - split;
 }
-
-function parseRates(input: unknown) {
-  if (typeof input !== "object" || input === null || !("data" in input)) {
-    throw new Error("Received an invalid exchange rate response");
-  }
-
-  const data = input.data;
-
-  if (
-    typeof data !== "object" ||
-    data === null ||
-    !("currency" in data) ||
-    data.currency !== "USD" ||
-    !("rates" in data) ||
-    typeof data.rates !== "object" ||
-    data.rates === null
-  ) {
-    throw new Error("Received an invalid exchange rate response");
-  }
-
-  const rawRates = data.rates as Record<string, unknown>;
-
-  return new Map(
-    ASSETS.map((asset) => {
-      const rawRate = asset.symbol in rawRates ? rawRates[asset.symbol] : undefined;
-      const rate = typeof rawRate === "string" ? Number(rawRate) : Number.NaN;
-
-      if (!Number.isFinite(rate) || rate <= 0) {
-        throw new Error("Received an invalid exchange rate response");
-      }
-
-      return [asset.symbol, rate] as const;
-    }),
-  );
-}
-
-onMounted(getRates);
 </script>
 
 <template>
@@ -281,7 +216,12 @@ onMounted(getRates);
               }}</time>
             </template>
           </span>
-          <button class="rate-refresh-button" type="button" :disabled="loading" @click="getRates">
+          <button
+            class="rate-refresh-button"
+            type="button"
+            :disabled="loading"
+            @click="refreshRates"
+          >
             Refresh rates
           </button>
         </div>
