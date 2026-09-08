@@ -105,6 +105,9 @@ button {
   font-weight: 500;
   line-height: var(--space-5);
 }
+.rate-refresh-button:disabled {
+  cursor: wait;
+}
 .rate-refresh {
   display: flex;
   flex-direction: column;
