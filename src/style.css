@@ -40,7 +40,6 @@
 }
 
 body {
-  margin: 0;
   background: var(--color-canvas);
   color: var(--color-text);
   font-family: var(--font-sans);
@@ -89,8 +88,6 @@ button {
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
-}
-.configure-card-heading {
   font-weight: 600;
   font-size: var(--font-size-lg);
   line-height: var(--space-7);
@@ -104,7 +101,6 @@ button {
   border: 0;
   border-radius: var(--radius-sm);
   color: var(--color-text-muted);
-  font-family: inherit;
   font-size: var(--font-size-base);
   font-weight: 500;
   line-height: var(--space-5);
@@ -129,17 +125,12 @@ button {
   position: relative;
 }
 
-.configure-card-field .amount-field {
+.amount-field {
   font-weight: 500;
   font-size: var(--font-size-base);
   line-height: 1.125rem;
-  position: relative;
   display: flex;
   flex-direction: column;
-}
-
-.amount-field {
-  display: flex;
   gap: var(--space-2);
 }
 .amount-field > span:first-child {
@@ -148,7 +139,8 @@ button {
   font-weight: 600;
 }
 
-.currency-mark {
+.currency-mark,
+.currency-code {
   color: var(--color-text-muted);
   font-family: var(--font-mono);
   font-size: var(--font-size-lg);
@@ -156,9 +148,11 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  inset: 0 auto 0 var(--space-4);
   position: absolute;
   pointer-events: none;
+}
+.currency-mark {
+  inset: 0 auto 0 var(--space-4);
 }
 .amount-input {
   display: flex;
@@ -166,8 +160,6 @@ button {
   position: relative;
 }
 .amount-input input {
-  outline: 2px solid transparent;
-  outline-offset: 2px;
   font-weight: 600;
   font-size: var(--font-size-xl);
   line-height: 2rem;
@@ -186,16 +178,7 @@ button {
   border-color: var(--color-danger);
 }
 .currency-code {
-  color: var(--color-text-muted);
-  font-size: var(--font-size-lg);
-  line-height: var(--space-7);
-  font-family: var(--font-mono);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   inset: 0 var(--space-4) 0 auto;
-  position: absolute;
-  pointer-events: none;
 }
 .holdings-error {
   position: absolute;
@@ -239,19 +222,20 @@ button {
   pointer-events: none;
   transform: rotate(45deg);
 }
-.allocation-asset {
-  appearance: none;
-  outline: 2px solid transparent;
-  outline-offset: 2px;
-  padding: var(--space-2) 2.75rem var(--space-2) var(--space-3);
+.allocation-asset,
+.allocation-percentage input {
   background-color: var(--color-canvas);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
+  width: 100%;
+  min-height: 2.75rem;
+}
+.allocation-asset {
+  appearance: none;
+  padding: var(--space-2) 2.75rem var(--space-2) var(--space-3);
   color: var(--color-text);
   cursor: pointer;
   font-weight: 500;
-  width: 100%;
-  min-height: 2.75rem;
 }
 
 .allocation-percentage {
@@ -259,19 +243,9 @@ button {
 }
 .allocation-percentage input {
   appearance: textfield;
-  outline: 2px solid transparent;
-  outline-offset: 2px;
   font-weight: 600;
   text-align: right;
-  padding-right: var(--space-7);
-  padding-left: var(--space-2);
-  padding-top: var(--space-2);
-  padding-bottom: var(--space-2);
-  background-color: var(--color-canvas);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  width: 100%;
-  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-7) var(--space-2) var(--space-2);
 }
 .allocation-percentage input::-webkit-inner-spin-button,
 .allocation-percentage input::-webkit-outer-spin-button {
@@ -294,7 +268,6 @@ button {
   align-items: center;
   margin-top: var(--space-3);
   margin-bottom: var(--space-3);
-  color: var(--color-accent);
   width: 100%;
   min-height: 2.75rem;
 }
@@ -340,7 +313,6 @@ select:focus-visible {
 }
 
 .results-panel {
-  position: relative;
   padding: var(--space-7);
   background-color: var(--color-canvas);
   border: 1px solid var(--color-border);
@@ -362,9 +334,12 @@ select:focus-visible {
 .result-item + .result-item {
   border-top: 1px dashed var(--color-border);
 }
-.result-item-header {
+.result-item-header,
+.result-item-allocated {
   font-size: var(--font-size-base);
   line-height: var(--space-5);
+}
+.result-item-header {
   font-weight: 600;
 }
 .result-item-quantity {
@@ -404,7 +379,5 @@ select:focus-visible {
 
 .result-item-allocated {
   color: var(--color-text-muted);
-  font-size: var(--font-size-base);
-  line-height: var(--space-5);
   margin-top: var(--space-2);
 }
