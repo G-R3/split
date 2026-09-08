@@ -46,7 +46,7 @@ body {
   font-size: var(--font-size-base);
 }
 .app-shell {
-  width: min(100% - calc(var(--space-4) * 2), 64rem);
+  width: min(100% - calc(var(--space-4) * 2), 48rem);
   margin: 0 auto;
   padding: calc(var(--space-7) * 2) 0;
 }
@@ -63,11 +63,11 @@ button {
 
 .app-grid {
   display: grid;
-  gap: var(--space-6);
+  gap: var(--space-4);
 
-  @media (min-width: 768px) {
+  @media (min-width: 700px) {
     align-items: flex-start;
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -76,10 +76,10 @@ button {
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
   background-color: var(--color-surface-muted);
-  padding: var(--space-6);
+  padding: var(--space-5);
 
-  @media (min-width: 768px) {
-    padding: var(--space-5);
+  @media (min-width: 700px) {
+    padding: var(--space-4);
   }
 }
 
@@ -317,10 +317,15 @@ select:focus-visible {
 }
 
 .results-panel {
-  padding: var(--space-7);
+  min-width: 0;
+  padding: var(--space-5);
   background-color: var(--color-canvas);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
+
+  @media (min-width: 700px) {
+    padding: var(--space-4);
+  }
 }
 .results-title {
   font-size: var(--font-size-xl);
@@ -349,17 +354,13 @@ select:focus-visible {
 .results-item-quantity {
   letter-spacing: -0.025em;
   font-weight: 600;
-  font-size: var(--font-size-2xl);
-  line-height: 2.25rem;
-  overflow-wrap: break-word;
+  font-size: clamp(var(--font-size-xl), 4.2vw, var(--font-size-3xl));
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   margin-top: var(--space-5);
-  min-block-size: 2.25rem;
-
-  @media (min-width: 640px) {
-    font-size: var(--font-size-3xl);
-    line-height: 2.5rem;
-    min-block-size: 2.5rem;
-  }
+  min-block-size: 1.15em;
 }
 
 .rate-refresh-status-skeleton,
