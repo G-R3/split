@@ -268,6 +268,12 @@ onMounted(getRates);
             aria-live="polite"
           >
             <span v-if="loading" class="rate-refresh-status-skeleton" aria-hidden="true" />
+            <template v-else-if="error && lastUpdated">
+              Refresh failed. Using&nbsp;<time :datetime="lastUpdated.datetime">{{
+                lastUpdated.label
+              }}</time
+              >&nbsp;rates.
+            </template>
             <template v-else-if="error">Rates unavailable. Try again.</template>
             <template v-else-if="lastUpdated">
               Rates fetched at&nbsp;<time :datetime="lastUpdated.datetime">{{
