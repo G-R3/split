@@ -135,7 +135,7 @@ function updateSplitPercentages(rowIndex: number, event: Event) {
           <legend class="allocation-section-header">Allocation</legend>
           <div class="allocation-fields">
             <template v-for="(asset, rowIndex) in allocations" :key="rowIndex">
-              <article class="allocation-row" :aria-labelledby="`asset-${asset.symbol}`">
+              <article class="allocation-row">
                 <div class="allocation-asset-field">
                   <select
                     v-model="selectedSymbols[rowIndex]"
