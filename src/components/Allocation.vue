@@ -128,10 +128,19 @@ onMounted(getRates);
 
 <template>
   <main class="app-shell">
+    <header class="app-intro">
+      <h1>Split</h1>
+      <p>
+        A tool to calculate how much of each asset to buy based on your
+        <code>USD</code>
+        allocation
+      </p>
+    </header>
+
     <section class="app-grid">
       <section class="configure-card" aria-labelledby="configure-title">
         <div class="configure-header">
-          <h3 id="configure-title">Configure</h3>
+          <h2 id="configure-title">Configure</h2>
           <div class="rate-refresh">
             <button class="rate-refresh-button" type="button" :disabled="loading" @click="getRates">
               Refresh rates
@@ -241,7 +250,7 @@ onMounted(getRates);
 
       <section class="results-panel">
         <div>
-          <h3 class="results-title">What to buy?</h3>
+          <h2 class="results-title">What to buy?</h2>
           <div class="results-list">
             <template v-for="(asset, rowIndex) in allocations" :key="rowIndex">
               <article class="results-item" :aria-labelledby="`asset-${asset.symbol}`">

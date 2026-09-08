@@ -53,6 +53,21 @@ body {
   padding: calc(var(--space-7) * 2) 0;
 }
 
+.app-intro {
+  margin-bottom: var(--space-6);
+}
+.app-intro h1 {
+  font-size: var(--font-size-xl);
+  line-height: 2rem;
+  letter-spacing: -0.025em;
+}
+.app-intro p {
+  max-width: 60ch;
+  margin-top: var(--space-2);
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
 button,
 input,
 select {
@@ -93,6 +108,9 @@ button {
   font-weight: 600;
   font-size: var(--font-size-lg);
   line-height: var(--space-7);
+}
+.configure-header h2 {
+  font: inherit;
 }
 
 .rate-refresh-button {
@@ -339,8 +357,8 @@ select:focus-visible {
   }
 }
 .results-title {
-  font-size: var(--font-size-xl);
-  line-height: 2rem;
+  font-size: var(--font-size-lg);
+  line-height: var(--space-7);
   font-weight: 600;
 }
 .results-list {
