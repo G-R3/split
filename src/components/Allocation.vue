@@ -1,19 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useExchangeRates } from "../composables/useExchangeRates";
-type AssetSymbol = "BTC" | "ETH" | "SOL" | "ADA" | "DOGE";
-type Asset = {
-  symbol: AssetSymbol;
-  name: string;
-};
-
-type Allocation = {
-  name?: string;
-  symbol: AssetSymbol;
-  percentage: number;
-  quantity?: number;
-  usd?: number;
-};
 
 const USD_AMOUNT_PATTERN = /^\$?(?:(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d{0,2})?|\.\d{1,2})$/;
 
@@ -23,7 +10,17 @@ const ASSETS = [
   { symbol: "SOL", name: "Solana" },
   { symbol: "ADA", name: "Cardano" },
   { symbol: "DOGE", name: "Dogecoin" },
-] satisfies readonly Asset[];
+] as const;
+
+type AssetSymbol = (typeof ASSETS)[number]["symbol"];
+
+type Allocation = {
+  name?: string;
+  symbol: AssetSymbol;
+  percentage: number;
+  quantity?: number;
+  usd?: number;
+};
 
 const usdFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
