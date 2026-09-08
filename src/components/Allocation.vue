@@ -98,6 +98,16 @@ async function getRates() {
 
     const { data }: ExchangeRatesResponse = await response.json();
 
+    const hasAssets = ASSETS.every(({ symbol }) => {
+      const rate = Number(data?.rates?.[symbol]);
+
+      return Number.isFinite(rate) && rate > 0;
+    });
+
+    if (data?.currency !== "USD" || !hasAssets) {
+      throw new Error("Received an invalid exchange rate response");
+    }
+
     rates.value = data.rates;
 
     const updatedAt = new Date();
@@ -258,8 +268,10 @@ onMounted(getRates);
           <h2 class="results-title">What to buy?</h2>
           <div class="results-list">
             <template v-for="(asset, rowIndex) in allocations" :key="rowIndex">
-              <article class="results-item" :aria-labelledby="`asset-${asset.symbol}`">
-                <strong class="results-item-header"> {{ asset.name }} ({{ asset.symbol }}) </strong>
+              <article class="results-item" :aria-labelledby="`result-${asset.symbol}`">
+                <strong :id="`result-${asset.symbol}`" class="results-item-header">
+                  {{ asset.name }} ({{ asset.symbol }})
+                </strong>
 
                 <p class="results-item-quantity">
                   <span
