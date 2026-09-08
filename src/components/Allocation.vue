@@ -141,25 +141,6 @@ onMounted(getRates);
       <section class="configure-card" aria-labelledby="configure-title">
         <div class="configure-header">
           <h2 id="configure-title">Configure</h2>
-          <div class="rate-refresh">
-            <button class="rate-refresh-button" type="button" :disabled="loading" @click="getRates">
-              Refresh rates
-            </button>
-            <span
-              class="rate-refresh-status"
-              :class="{ 'rate-refresh-status--error': error }"
-              role="status"
-              aria-live="polite"
-            >
-              <span v-if="loading" class="rate-refresh-status-skeleton" aria-hidden="true" />
-              <template v-else-if="error">Rates unavailable. Try again.</template>
-              <template v-else-if="lastUpdated">
-                Updated at&nbsp;<time :datetime="lastUpdated.datetime">{{
-                  lastUpdated.label
-                }}</time>
-              </template>
-            </span>
-          </div>
         </div>
         <div class="holdings-field">
           <label for="holdings-input" class="amount-field">
@@ -210,6 +191,11 @@ onMounted(getRates);
                       {{ option.name }} ({{ option.symbol }})
                     </option>
                   </select>
+                  <span class="allocation-asset-chevron" aria-hidden="true">
+                    <svg viewBox="0 0 12 8">
+                      <path d="m1 1 5 5 5-5" />
+                    </svg>
+                  </span>
                 </div>
 
                 <label class="allocation-percentage-field">
@@ -246,6 +232,25 @@ onMounted(getRates);
             </template>
           </div>
         </fieldset>
+        <div class="rate-refresh">
+          <span
+            class="rate-refresh-status"
+            :class="{ 'rate-refresh-status--error': error }"
+            role="status"
+            aria-live="polite"
+          >
+            <span v-if="loading" class="rate-refresh-status-skeleton" aria-hidden="true" />
+            <template v-else-if="error">Rates unavailable. Try again.</template>
+            <template v-else-if="lastUpdated">
+              Rates updated at&nbsp;<time :datetime="lastUpdated.datetime">{{
+                lastUpdated.label
+              }}</time>
+            </template>
+          </span>
+          <button class="rate-refresh-button" type="button" :disabled="loading" @click="getRates">
+            Refresh rates
+          </button>
+        </div>
       </section>
 
       <section class="results-panel">

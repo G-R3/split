@@ -115,10 +115,7 @@ button {
 
 .configure-header {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-4);
   font-weight: 600;
   font-size: var(--font-size-lg);
   line-height: var(--space-7);
@@ -145,27 +142,28 @@ button {
 }
 .rate-refresh {
   display: flex;
-  flex-direction: column;
-  min-inline-size: 7.5rem;
-  margin-inline-start: auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: 1px dashed var(--color-border);
 }
 .rate-refresh-status {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   min-block-size: 1lh;
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);
-  text-align: center;
 }
 .rate-refresh-status--error {
   color: var(--color-danger);
   white-space: normal;
-  text-align: center;
 }
 
 .holdings-field {
-  margin-top: var(--space-6);
+  margin-top: var(--space-5);
 }
 
 .amount-field {
@@ -258,16 +256,23 @@ button {
   position: relative;
   min-width: 0;
 }
-.allocation-asset-field::after {
-  width: 0.45rem;
-  height: 0.45rem;
-  border: solid var(--color-text-muted);
-  border-width: 0 1.5px 1.5px 0;
-  content: "";
+.allocation-asset-chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: absolute;
-  inset: calc(50% - 0.2rem) var(--space-4) auto auto;
+  inset: 0 var(--space-4) 0 auto;
   pointer-events: none;
-  transform: rotate(45deg);
+}
+.allocation-asset-chevron svg {
+  display: block;
+  width: 0.75rem;
+  height: 0.5rem;
+  fill: none;
+  stroke: var(--color-text-muted);
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+  stroke-width: 1.5;
 }
 .allocation-asset-select,
 .allocation-percentage-field input {
@@ -384,6 +389,12 @@ select:focus-visible {
   padding-top: var(--space-7);
   padding-bottom: var(--space-7);
 }
+.results-item:first-child {
+  padding-top: var(--space-5);
+}
+.results-item:last-child {
+  padding-bottom: var(--space-5);
+}
 .results-item + .results-item {
   border-top: 1px dashed var(--color-border);
 }
@@ -413,7 +424,7 @@ select:focus-visible {
   background-color: var(--color-border);
 }
 .rate-refresh-status-skeleton {
-  inline-size: 100%;
+  inline-size: 7rem;
   block-size: 0.5rem;
   vertical-align: middle;
 }
