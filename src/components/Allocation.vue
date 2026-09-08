@@ -265,13 +265,12 @@ onMounted(getRates);
                   <template v-else-if="asset.quantity !== undefined">
                     {{ cryptoFormatter.format(asset.quantity) }} {{ asset.symbol }}
                   </template>
-                  <span
-                    v-else
-                    :aria-label="
-                      amount.error ? 'Enter a valid amount' : `${asset.name} rate unavailable`
-                    "
-                    >---</span
-                  >
+                  <span v-else>
+                    <span aria-hidden="true">---</span>
+                    <span class="sr-only">
+                      {{ amount.error ? "Enter a valid amount" : `${asset.name} rate unavailable` }}
+                    </span>
+                  </span>
                 </p>
 
                 <p class="results-item-allocated">
