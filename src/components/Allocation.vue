@@ -136,10 +136,18 @@ onMounted(getRates);
             <button class="rate-refresh-button" type="button" :disabled="loading" @click="getRates">
               Refresh rates
             </button>
-            <span class="rate-refresh-status" role="status" aria-live="polite">
+            <span
+              class="rate-refresh-status"
+              :class="{ 'rate-refresh-status--error': error }"
+              role="status"
+              aria-live="polite"
+            >
               <span v-if="loading" class="rate-refresh-status-skeleton" aria-hidden="true" />
+              <template v-else-if="error">Rates unavailable. Try again.</template>
               <template v-else-if="lastUpdated">
-                Updated at&nbsp;<time :datetime="lastUpdated.datetime">{{ lastUpdated.label }}</time>
+                Updated at&nbsp;<time :datetime="lastUpdated.datetime">{{
+                  lastUpdated.label
+                }}</time>
               </template>
             </span>
           </div>
@@ -167,68 +175,68 @@ onMounted(getRates);
             {{ amount.error }}
           </span>
         </div>
-        <div class="allocation-section-header">
-          <p class="allocation-heading">Allocation</p>
-        </div>
-        <div class="allocation-fields">
-          <template v-for="(asset, rowIndex) in allocations" :key="rowIndex">
-            <article class="allocation-row" :aria-labelledby="`asset-${asset.symbol}`">
-              <div class="allocation-asset-field">
-                <select
-                  v-model="selectedSymbols[rowIndex]"
-                  :aria-label="`Asset for ${asset.percentage}% allocation`"
-                  :id="`asset-${asset.symbol}`"
-                  class="allocation-asset-select"
-                >
-                  <option
-                    v-for="option in ASSETS"
-                    :value="option.symbol"
-                    :key="option.symbol"
-                    :disabled="
-                      selectedSymbols.some(
-                        (selectedSymbol, selectedIndex) =>
-                          selectedIndex !== rowIndex && selectedSymbol === option.symbol,
-                      )
-                    "
+        <fieldset class="allocation-section">
+          <legend class="allocation-section-header">Allocation</legend>
+          <div class="allocation-fields">
+            <template v-for="(asset, rowIndex) in allocations" :key="rowIndex">
+              <article class="allocation-row" :aria-labelledby="`asset-${asset.symbol}`">
+                <div class="allocation-asset-field">
+                  <select
+                    v-model="selectedSymbols[rowIndex]"
+                    :aria-label="`Asset for ${asset.percentage}% allocation`"
+                    :id="`asset-${asset.symbol}`"
+                    class="allocation-asset-select"
                   >
-                    {{ option.name }} ({{ option.symbol }})
-                  </option>
-                </select>
-              </div>
+                    <option
+                      v-for="option in ASSETS"
+                      :value="option.symbol"
+                      :key="option.symbol"
+                      :disabled="
+                        selectedSymbols.some(
+                          (selectedSymbol, selectedIndex) =>
+                            selectedIndex !== rowIndex && selectedSymbol === option.symbol,
+                        )
+                      "
+                    >
+                      {{ option.name }} ({{ option.symbol }})
+                    </option>
+                  </select>
+                </div>
 
-              <label class="allocation-percentage-field">
+                <label class="allocation-percentage-field">
+                  <input
+                    :value="asset.percentage"
+                    type="number"
+                    inputmode="numeric"
+                    min="0"
+                    max="100"
+                    step="1"
+                    :aria-label="`${asset.name} allocation percentage`"
+                    @input="updateSplitPercentages(rowIndex, $event)"
+                    @blur="
+                      (event) => {
+                        const input = event.currentTarget as HTMLInputElement;
+                        input.value = String(splitPercentages[rowIndex]);
+                      }
+                    "
+                  />
+                  <span aria-hidden="true">%</span>
+                </label>
+              </article>
+
+              <label v-if="rowIndex === 0" class="allocation-range-field">
                 <input
-                  :value="asset.percentage"
-                  type="number"
-                  inputmode="numeric"
+                  v-model.number="primarySplit"
+                  class="allocation-range"
+                  type="range"
                   min="0"
                   max="100"
-                  step="1"
-                  :aria-label="`${asset.name} allocation percentage`"
-                  @input="updateSplitPercentages(rowIndex, $event)"
-                  @blur="
-                    (event) => {
-                      const input = event.currentTarget as HTMLInputElement;
-                      input.value = String(splitPercentages[rowIndex]);
-                    }
-                  "
+                  :aria-label="`${asset.name} allocation percentage slider`"
                 />
-                <span aria-hidden="true">%</span>
               </label>
-            </article>
-
-            <label v-if="rowIndex === 0" class="allocation-range-field">
-              <input
-                v-model.number="primarySplit"
-                class="allocation-range"
-                type="range"
-                min="0"
-                max="100"
-                :aria-label="`${asset.name} allocation percentage slider`"
-              />
-            </label>
-          </template>
-        </div>
+            </template>
+          </div>
+        </fieldset>
       </section>
 
       <section class="results-panel">

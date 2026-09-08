@@ -20,12 +20,14 @@
   --font-size-3xl: 2.25rem;
 
   --color-canvas: #fff;
-  --color-surface-muted: #f9f9f9;
-  --color-border: #0000001a;
-  --color-text: #000;
-  --color-text-muted: #0009;
-  --color-danger: #ef4444;
-  --color-accent: #3b82f6;
+  --color-surface-muted: oklch(98.5% 0 0);
+  --color-surface-control: oklch(97% 0 0);
+  --color-border: oklch(92.2% 0 0);
+  --color-text: oklch(14.5% 0 0);
+  --color-text-muted: oklch(55.6% 0 0);
+  --color-text-control: oklch(43.9% 0 0);
+  --color-danger: oklch(57.7% 0.245 27.325);
+  --color-accent: oklch(62.3% 0.214 259.815);
 
   --font-sans: system-ui, "Segoe UI", Roboto, sans-serif;
   --font-mono: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
@@ -100,7 +102,8 @@ button {
   padding-inline: var(--space-4);
   border: 0;
   border-radius: var(--radius-sm);
-  color: var(--color-text-muted);
+  background-color: var(--color-surface-control);
+  color: var(--color-text-control);
   font-size: var(--font-size-base);
   font-weight: 500;
   line-height: var(--space-5);
@@ -121,6 +124,11 @@ button {
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);
   white-space: nowrap;
+}
+.rate-refresh-status--error {
+  color: var(--color-danger);
+  white-space: normal;
+  text-align: center;
 }
 
 .holdings-field {
@@ -191,12 +199,15 @@ button {
   margin-top: var(--space-1);
 }
 
-.allocation-section-header {
+.allocation-section {
+  min-inline-size: 0;
   margin-top: var(--space-7);
+  border: 0;
+}
+.allocation-section-header {
+  width: 100%;
   border-top: 1px dashed var(--color-border);
   padding-top: var(--space-5);
-}
-.allocation-heading {
   font-size: var(--font-size-base);
   line-height: var(--space-5);
   font-weight: 600;
