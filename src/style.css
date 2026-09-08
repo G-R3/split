@@ -280,6 +280,7 @@ button {
   cursor: pointer;
   appearance: none;
   background: transparent;
+  min-height: calc(var(--space-5) * 2); /* this increases the sliders interactive area */
 }
 .allocation-range::-webkit-slider-runnable-track {
   height: 0.25rem;
