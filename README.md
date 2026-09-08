@@ -12,7 +12,7 @@ Live demo: https://split-iota.vercel.app/
 - Coinbase Exchange Rates API
 - CSS
 
-Vue is the only runtime dependency, and the UI is implemented without a component library, CSS framework, or state management library. I also kept most of the feature in one Vue component because I believe the app is small enough that splitting the state, API logic, and UI into separate files would add indirection without much reuse.
+Vue is the only runtime dependency, and the UI is implemented without a component library, CSS framework, or state management library. I opted to keep the allocation state, calculations, and UI together in one component. However, the rates fetching, validation, and request state live in a focused composable.
 
 ## Running it locally
 
@@ -38,15 +38,15 @@ The tool uses the Coinbase Exchange Rates API:
 
 `GET https://api.coinbase.com/v2/exchange-rates?currency=USD`
 
-The API returns each rate as the amount of an asset you can get for one USD. Split calculates the quantity to buy with:
+The API returns each rate as the amount of an asset you can get for one USD. We then calculate the quantity to buy with:
 
 ```text
 asset quantity = USD allocation * exchange rate
 ```
 
-Split fetches the exchange rates when the page loads and stores the returned rate map locally. Changing the selected assets does not make another API request.
+We fetch the exchange rates when the page loads and stores the validated rate map locally. Changing the selected assets does not make another API request.
 
-Before using a response, the app checks that the base currency is USD and that every supported asset has a finite, positive exchange rate. Network errors, unsuccessful HTTP responses, and invalid API responses all show an error state.
+Before using a response, the app checks that the base currency is USD and that every supported asset has a finite, positive exchange rate. Network errors, unsuccessful HTTP responses, and invalid API responses all show an error state. If a refresh fails, we keep the last valid rates and shows when they were fetched. We also keep using the last valid rates and identifies when they were fetched instead of clearing useful results.
 
 ### Allocation state
 
@@ -82,7 +82,7 @@ Other UI details include:
 
 - Editable allocation percentages through numeric inputs and a range slider
 - Loading skeletons while exchange rates are fetched from the Coinbase API
-- A manual rate refresh button and a "Rates fetched at..." timestamp
+- A manual rate refresh button, fetch timestamp, and stale-rate fallback
 - Invalid input and API error states
 - A responsive layout that does not truncate financial values
 - Light and dark modes based on system preference
