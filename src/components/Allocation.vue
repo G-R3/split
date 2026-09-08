@@ -22,6 +22,7 @@ type ExchangeRatesResponse = {
 };
 
 const API_URL = "https://api.coinbase.com/v2/exchange-rates?currency=USD";
+const USD_AMOUNT_PATTERN = /^\$?(?:(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d{0,2})?|\.\d{1,2})$/;
 
 const ASSETS = [
   { symbol: "BTC", name: "Bitcoin" },
@@ -57,13 +58,14 @@ const error = ref<string | null>(null);
 const splitPercentages = computed(() => [primarySplit.value, 100 - primarySplit.value] as const);
 
 const amount = computed(() => {
-  const normalized = holdings.value.trim().replaceAll(",", "").replace(/^\$/, "");
+  const input = holdings.value.trim();
 
-  if (!normalized) return { error: "Enter an amount." };
+  if (!input) return { error: "Enter an amount." };
+  if (!USD_AMOUNT_PATTERN.test(input)) return { error: "Enter a valid USD amount." };
 
-  const value = Number(normalized);
+  const value = Number(input.replaceAll(",", "").replace(/^\$/, ""));
 
-  if (!Number.isFinite(value) || value < 0) return { error: "Enter a valid amount." };
+  if (!Number.isFinite(value)) return { error: "Enter a valid USD amount." };
 
   return { amount: value };
 });
