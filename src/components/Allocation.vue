@@ -252,7 +252,7 @@ onMounted(getRates);
             <span v-if="loading" class="rate-refresh-status-skeleton" aria-hidden="true" />
             <template v-else-if="error">Rates unavailable. Try again.</template>
             <template v-else-if="lastUpdated">
-              Rates updated at&nbsp;<time :datetime="lastUpdated.datetime">{{
+              Rates fetched at&nbsp;<time :datetime="lastUpdated.datetime">{{
                 lastUpdated.label
               }}</time>
             </template>
