@@ -14,13 +14,6 @@ type Allocation = {
   usd?: number;
 };
 
-type ExchangeRatesResponse = {
-  data: {
-    currency: string;
-    rates: Record<string, string>;
-  };
-};
-
 const API_URL = "https://api.coinbase.com/v2/exchange-rates?currency=USD";
 const USD_AMOUNT_PATTERN = /^\$?(?:(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d{0,2})?|\.\d{1,2})$/;
 
@@ -49,7 +42,7 @@ const timeFormatter = new Intl.DateTimeFormat("en-US", {
 
 const primarySplit = ref(70);
 const holdings = ref("10000");
-const rates = ref<Record<string, string>>({});
+const rates = ref(new Map<AssetSymbol, number>());
 const selectedSymbols = ref<[AssetSymbol, AssetSymbol]>(["BTC", "ETH"]);
 const lastUpdated = ref<{ datetime: string; label: string } | null>(null);
 const loading = ref(true);
@@ -73,11 +66,11 @@ const amount = computed(() => {
 const allocations = computed(() => {
   return selectedSymbols.value.map((symbol, i) => {
     const asset = ASSETS.find((asset) => asset.symbol === symbol);
-    const rate = Number(rates.value[symbol]);
+    const rate = rates.value.get(symbol);
     const percentage = splitPercentages.value[i];
     const usd =
       amount.value.amount === undefined ? undefined : amount.value.amount * (percentage / 100);
-    const quantity = usd !== undefined && Number.isFinite(rate) ? usd * rate : undefined;
+    const quantity = usd !== undefined && rate !== undefined ? usd * rate : undefined;
 
     return {
       name: asset?.name,
@@ -98,19 +91,7 @@ async function getRates() {
 
     if (!response.ok) throw new Error("Failed to fetch exchange rates");
 
-    const { data }: ExchangeRatesResponse = await response.json();
-
-    const hasAssets = ASSETS.every(({ symbol }) => {
-      const rate = Number(data?.rates?.[symbol]);
-
-      return Number.isFinite(rate) && rate > 0;
-    });
-
-    if (data?.currency !== "USD" || !hasAssets) {
-      throw new Error("Received an invalid exchange rate response");
-    }
-
-    rates.value = data.rates;
+    rates.value = parseRates(await response.json());
 
     const updatedAt = new Date();
     lastUpdated.value = {
@@ -133,6 +114,41 @@ function updateSplitPercentages(rowIndex: number, event: Event) {
 
   input.value = String(split);
   primarySplit.value = rowIndex === 0 ? split : 100 - split;
+}
+
+function parseRates(input: unknown) {
+  if (typeof input !== "object" || input === null || !("data" in input)) {
+    throw new Error("Received an invalid exchange rate response");
+  }
+
+  const data = input.data;
+
+  if (
+    typeof data !== "object" ||
+    data === null ||
+    !("currency" in data) ||
+    data.currency !== "USD" ||
+    !("rates" in data) ||
+    typeof data.rates !== "object" ||
+    data.rates === null
+  ) {
+    throw new Error("Received an invalid exchange rate response");
+  }
+
+  const rawRates = data.rates as Record<string, unknown>;
+
+  return new Map(
+    ASSETS.map((asset) => {
+      const rawRate = asset.symbol in rawRates ? rawRates[asset.symbol] : undefined;
+      const rate = typeof rawRate === "string" ? Number(rawRate) : Number.NaN;
+
+      if (!Number.isFinite(rate) || rate <= 0) {
+        throw new Error("Received an invalid exchange rate response");
+      }
+
+      return [asset.symbol, rate] as const;
+    }),
+  );
 }
 
 onMounted(getRates);
