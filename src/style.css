@@ -32,9 +32,27 @@
   --font-sans: system-ui, "Segoe UI", Roboto, sans-serif;
   --font-mono: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
 
+  color-scheme: light;
   font-synthesis: none;
   -webkit-font-smoothing: antialiased;
 }
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-canvas: #000;
+    --color-surface-muted: oklch(14.5% 0 0);
+    --color-surface-control: oklch(20.5% 0 0);
+    --color-border: oklch(26.9% 0 0);
+    --color-text: oklch(98.5% 0 0);
+    --color-text-muted: oklch(70.8% 0 0);
+    --color-text-control: oklch(87% 0 0);
+    --color-danger: oklch(70.4% 0.191 22.216);
+    --color-accent: oklch(70.7% 0.165 254.624);
+
+    color-scheme: dark;
+  }
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
